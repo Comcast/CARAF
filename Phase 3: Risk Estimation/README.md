@@ -3,8 +3,8 @@ This phase evaluates and quantifies the risk to the assets if no countermeasures
 
 ## Time to exposure
 Mosca's theorem is used as reference:
-- Lifespan of the asset is $X$ from [Phase 2](https://github.com/comcast-spider/CARAF-Knowledge-Base/tree/main/Phase%202%3A%20Inventory%20of%20Assets).
-- Time needed for mitigation is $Y$ from [Phase 2](https://github.com/comcast-spider/CARAF-Knowledge-Base/tree/main/Phase%202%3A%20Inventory%20of%20Assets).
+- Lifespan of the asset is $X$ from [Phase 2](https://github.com/comcast/CARAF/tree/main/Phase%202%3A%20Inventory%20of%20Assets).
+- Time needed for mitigation is $Y$ from [Phase 2](https://github.com/comcast/CARAF/tree/main/Phase%202%3A%20Inventory%20of%20Assets).
 - Time before threat results in a compromise (2035) is $Z$.
 - Calculate the value of $Z - (X+Y)$.
   - If the result is positive, your asset will be phased out before PQC migration is required
@@ -18,4 +18,4 @@ The evaluation will be based on the following factors:
 4. *Will there be a cost to migrate to PQC (as in additional internal resources dedicated to migration or negotiation with new vendors)?
 
 The questions with * are a one-time cost. If your asset will be vulnerable timeline-wise and you answered yes to item 1 or 2 above for cost, risk = high. Otherwise, risk = low.
-Once the risk level is determined for each asset, proceed to [Phase 4](https://github.com/comcast-spider/CARAF-Knowledge-Base/tree/main/Phase%204%3A%20Secure%20Assets).
+Once the risk level is determined for each asset, proceed to [Phase 4](https://github.com/comcast/CARAF/tree/main/Phase%204%3A%20Secure%20Assets).
