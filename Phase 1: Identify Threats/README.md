@@ -6,4 +6,4 @@ This section will help to determine what assets are impacted by the threats due 
 - Have a lifespan beyond 2035 (the primary target for completing PQC migration across federal systems according to National Security Memorandum 10 (NSM-10)).
 - Contain information susceptible to harvest-now-decrypt-later attacks.
 
-Once a list of the assets within scope is created, proceed to [Phase 2: Inventory of Assets](https://github.com/cma184_comcast/CARAF-Knowledge-Base/tree/main/Phase%201%3A%20Identify%20Threats).
+Once a list of the assets within scope is created, proceed to [Phase 2: Inventory of Assets](https://github.com/Comcast/CARAF/tree/main/Phase%202%3A%20Inventory%20of%20Assets).
