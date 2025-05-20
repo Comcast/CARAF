@@ -5,8 +5,8 @@ This phase evaluates the assets, especially the crypto components, to quantify t
 
 ## Informational
 - What is the lifespan of the asset (in years)? Value = $X$
-- What is the time needed to migrate the asset (in years)? Value = $Y$,
-$X$, and $Y$ will be used in the next phase: [Phase 3](https://github.com/comcast/CARAF/tree/main/Phase%203%3A%20Risk%20Estimation).
+- What is the time needed to migrate the asset (in years)? Value = $Y$;
+$X$ and $Y$ will be used in the next phase: [Phase 3](https://github.com/comcast/CARAF/tree/main/Phase%203%3A%20Risk%20Estimation).
 
 ## _Required_ to be crypto agile
 - Is it owned/managed by a third party? If no, +1.
