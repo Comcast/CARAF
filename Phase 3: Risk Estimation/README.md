@@ -4,7 +4,7 @@ This phase evaluates and quantifies the risk to the assets if no countermeasures
 ## Time to exposure
 Mosca's theorem is used as reference:
 - Lifespan of the asset is $X$ from [Phase 2](https://github.com/comcast/CARAF/tree/main/Phase%202%3A%20Inventory%20of%20Assets).
-- Time needed for mitigation is $Y$ from [Phase 2](https://github.com/comcast/CARAF/tree/main/Phase%202%3A%20Inventory%20of%20Assets).
+- Time needed for migration is $Y$ from [Phase 2](https://github.com/comcast/CARAF/tree/main/Phase%202%3A%20Inventory%20of%20Assets).
 - Time before threat results in a compromise (2035) is $Z$.
 - Calculate the value of $Z - (X+Y)$.
   - If the result is positive, your asset will be phased out before PQC migration is required
