@@ -9,10 +9,10 @@ This phase evaluates the assets, especially the crypto components, to quantify t
 $X$ and $Y$ will be used in the next phase: [Phase 3](https://github.com/comcast/CARAF/tree/main/Phase%203%3A%20Risk%20Estimation).
 
 ## _Required_ to be crypto agile
-- Is it owned/managed by a third party? If no, +1.
+- Is it owned by a third party? If no, +1.
+- Is it configured/managed by a third party? If no, +1.
 - Are there dependencies that also need to be updated in case of crypto migration? If no, +1.
 - Does implementation of it include hardware components (e.g., HSM, ASIC, FPGA, hardware accelerators, etc.)? If no, +1.
-- Is it configured/managed by a third party? If no, +1.
 - Does updating the crypto require changes to the asset? If no, +1.
 
 ## _Good-to-have_ to be more crypto agile
@@ -20,9 +20,8 @@ $X$ and $Y$ will be used in the next phase: [Phase 3](https://github.com/comcast
 - *Does it store secret keys? If no, +1.
 - *Does it contain encrypted data with lifespan beyond 2035? If no, +1.
 - *Is it capable of remote updates? If yes, +1.
-- *Is it capable of migrating to PQC algorithms?
-  - Are there PQC implementations, tools, or services available? If yes, +1.
-  - Is the asset capable of supporting the PQC key sizes and message sizes? If yes, +1.
+- *Are there PQC implementations, tools, or services available to help with the migration? If yes, +1.
+- *Is the asset capable of supporting the PQC key sizes and message sizes? If yes, +1.
 
 Sum up the values from all questions for a combined crypto agility score ranging from 0 to 11. For the asset, if the answer is yes to any of the questions in the _Required_ section, it will be difficult to update the crypto component without significantly affecting the function of the asset; thus, the crypto agility score is _low_ (range from 0 to 5). The questions in _Good-to-have_ section does affect crypto agility, but may or may not be applicable depending on the type of asset; thus, the crypto agility score is _high_ (range from 6-11).
 
