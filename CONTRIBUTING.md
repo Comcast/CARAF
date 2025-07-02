@@ -17,12 +17,7 @@ Once your PR is issued, we will review your work and decide on adding it to the 
 For more details about contributing to GitHub projects see [How to use Github: Fork, Branch, Track, Squash and Pull Request](http://gun.io/blog/how-to-github-fork-branch-and-pull-request/)
 
 # What to Contribute?
-We welcome all kinds of contributions to this knowledge base, especially:
-- Changes to language, typos, fixes, etc.
-- Specific use cases of CARAF, it can be hypothetical or actual assessment, it can be based on the original CARAF or the CARAF calculation in this Knowledge Base, and it can be for PQC migration or other crypto updates that warrant a crypto agility risk assessment.
-- Linking to references of CARAF, other resources for crypto agility, crypto migration, updates to crypto standards or policies, post-quantum cryptography, risk assessment, mitigation/migration strategies, useful tools and policy updates.
-
-However, if you have other ideas, albeit simple, or recommendation for improvements, please do not hesitate to connect with us. We encourage you to use the Pull Request Template format when contributing.
+We welcome all kinds of contributions to this repository. If you have any ideas, albeit simple, or recommendation for improvements, please do not hesitate to connect with us. We encourage you to use the Pull Request Template format when contributing.
 
 # Contributor License Agreement
 Before Comcast merges your code into the project you must sign the [Comcast Contributor License Agreement (CLA)](https://gist.github.com/ComcastOSS/a7b8933dd8e368535378cda25c92d19a).
