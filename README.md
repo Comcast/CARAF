@@ -14,7 +14,7 @@ At the output of [Phase 3](CARAF%20Phases/Phase%203%3A%20Migration%20Recommendat
 # Quickstart with CARAF Calculator
 We have created a [CARAF calculator](Resources/CARAF%20Calculator.xlsm) (you can download the raw file as an Excel sheet) that performs the risk assessment on each asset in an asset inventory. Please review [CARAF phases](CARAF%20Phases) before using the calculator. Then, watch the video below to get started.
 
-https://github.com/user-attachments/assets/2896b2cd-3904-40c8-88ae-a686cb3964f8
+https://github.com/user-attachments/assets/86e677c7-6363-4b05-ac67-dff32e8a0ec5
 
 # CARAF is Referenced by Government and Industry
 
