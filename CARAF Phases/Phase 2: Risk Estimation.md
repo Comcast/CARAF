@@ -14,12 +14,11 @@ Mosca's theorem is used as reference:
 The evaluation will be based on the following factors:
 1. Will performance overhead be critical to the function of the asset? For example, the answer may be yes for streaming application, or no for databases accessed once per month.
 2. Will there be a significant cost for updating to the new algorithms each time? For example, the answer may be yes if asset is implemented in hardware, or no if asset is implemented in software.
-3. *Is decrypting then re-encrypting the asset needed (e.g., long-lived data)?
-4. *Will there be a cost to migrate to PQC (i.e., additional internal resources dedicated to migration or negotiation with new vendors)?
-The questions with * are a one-time cost. 
+3. Is decrypting then re-encrypting the asset needed (e.g., long-lived data)?
+4. Will there be a cost to migrate to PQC (i.e., additional internal resources dedicated to migration or negotiation with new vendors)?
 
 Based on the answers to the above questions, there are two levels of risk estimate:
-- *High risk*: If your asset will be *vulnerable* timeline-wise and you answered yes to item 1 or 2 above for cost, risk = high.
+- *High risk*: If your asset will be *vulnerable* timeline-wise and you answered yes to any of the questions in the `Cost to migrate` section above, risk = high.
 - *Low risk*: Otherwise, risk = low.
 
 Once the risk level is determined for each asset, proceed to [Phase 3](../CARAF%20Phases/Phase%203%3A%20Migration%20Recommendation.md).
