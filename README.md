@@ -29,7 +29,7 @@ https://github.com/user-attachments/assets/4bf38dee-8ace-43a4-8df2-70798ca745d6
 - **NCTA:** [Understanding Quantum-Safe Timelines and Deployments](https://www.nctatechnicalpapers.com/Paper/2023/3591_Pala_5298_paper/download)
 
 # Contribution
-We welcome all kinds of contributions to this repository! Please have a look at [CONTRIBUTING.md](CONTRIBUTING.md) for further information and guidelines.
+We welcome all kinds of contributions to this repository! Please have a look at [CONTRIBUTING.md](CONTRIBUTING.md) for more information and guidelines.
 
 # Maintainers
 The list of maintainers of this GitHub repository is available in [MAINTAINERS.md](MAINTAINERS.md). Please consider becoming a maintainer! 😃
