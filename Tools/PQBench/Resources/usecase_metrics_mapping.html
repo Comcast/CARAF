@@ -1,0 +1,113 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Use Case Metrics Mapping</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        select, ul { margin-top: 10px; }
+        label { font-weight: bold; }
+    </style>
+</head>
+<body>
+    <h2>Use Case Metrics Mapping</h2>
+    <label for="category">Select Category:</label>
+    <select id="category" onchange="updateSubcategories()">
+        <option value="">-- Select Category --</option>
+    </select>
+
+    <br><br>
+    <label for="subcategory">Select Subcategory:</label>
+    <select id="subcategory" onchange="showMetrics()">
+        <option value="">-- Select Subcategory --</option>
+    </select>
+
+    <br><br>
+    <div id="metricsOutput">
+        <h3>Relevant Metrics:</h3>
+        <ul id="metricsList"></ul>
+    </div>
+
+    <script>
+        const mapping = {
+            "Energy Constraints": {
+                "Very High Energy Constraints": ["Energy Efficiency"],
+                "High Energy Constraints": ["Throughput", "Latency", "Packet Loss", "Jitter", "Interoperability", "Scalability", "Overall Performance", "Key Generation Time", "Signature Generation Time", "Verification Time", "Encryption Time", "Decryption Time", "Energy Efficiency"],
+                "Moderate Energy Constraints": ["Throughput", "Latency", "Packet Loss", "Jitter", "Interoperability", "Scalability", "Overall Performance", "Key Generation Time", "Signature Generation Time", "Verification Time", "Encryption Time", "Decryption Time", "Energy Efficiency"],
+                "Low Energy Constraints": ["Throughput", "Interoperability", "Scalability", "Overall Performance", "Key Generation Time", "Signature Generation Time", "Verification Time", "Encryption Time", "Decryption Time", "Energy Efficiency"],
+                "Minimal Energy Constraints": ["Throughput", "Latency", "Interoperability", "Scalability", "Overall Performance", "Key Generation Time", "Signature Generation Time", "Verification Time", "Encryption Time", "Decryption Time"]
+            },
+            "Network Performance": {
+                "Low Latency Use Cases": ["Latency", "Packet Loss", "Jitter", "Interoperability", "Scalability"],
+                "Moderate Latency Use Cases": ["Latency", "Packet Loss", "Jitter", "Interoperability", "Scalability"],
+                "High Latency Use Cases": ["Interoperability", "Scalability"],
+                "High Throughput Use Cases": ["Throughput", "Packet Loss", "Jitter", "Interoperability", "Scalability"],
+                "Moderate Throughput Use Cases": ["Throughput", "Packet Loss", "Jitter", "Interoperability", "Scalability"],
+                "Low Throughput Use Cases": ["Interoperability", "Scalability"]
+            },
+            "Computational Resources": {
+                "High Computational Power": ["Throughput", "Latency", "Packet Loss", "Jitter", "Interoperability", "Scalability", "Overall Performance", "Key Generation Time", "Signature Generation Time", "Verification Time", "Encryption Time", "Decryption Time"],
+                "Moderate Computational Power": ["Throughput", "Latency", "Packet Loss", "Jitter", "Interoperability", "Scalability", "Overall Performance", "Key Generation Time", "Signature Generation Time", "Verification Time", "Encryption Time", "Decryption Time"],
+                "Low Computational Power": ["Interoperability", "Scalability"]
+            },
+            "Security Requirements": {
+                "High Security Use Cases": ["Overall Performance", "Key Generation Time", "Signature Generation Time", "Verification Time", "Encryption Time", "Decryption Time", "Energy Efficiency"],
+                "Moderate Security Use Cases": ["Overall Performance", "Key Generation Time", "Signature Generation Time", "Verification Time", "Encryption Time", "Decryption Time", "Energy Efficiency"],
+                "Minimum Security Use Cases": ["Energy Efficiency"]
+            },
+            "Cryptographic Implementation": {
+                "Hardware-Based Cryptographic Use Cases": ["Overall Performance", "Key Generation Time", "Signature Generation Time", "Verification Time", "Encryption Time", "Decryption Time", "Energy Efficiency"],
+                "Software-Based Cryptographic Use Cases": ["Overall Performance", "Key Generation Time", "Signature Generation Time", "Verification Time", "Encryption Time", "Decryption Time", "Energy Efficiency"]
+            }
+        };
+
+        function updateSubcategories() {
+            const categorySelect = document.getElementById("category");
+            const subcategorySelect = document.getElementById("subcategory");
+            const selectedCategory = categorySelect.value;
+
+            subcategorySelect.innerHTML = '<option value="">-- Select Subcategory --</option>';
+
+            if (selectedCategory && mapping[selectedCategory]) {
+                const subcategories = Object.keys(mapping[selectedCategory]);
+                subcategories.forEach(sub => {
+                    const option = document.createElement("option");
+                    option.value = sub;
+                    option.textContent = sub;
+                    subcategorySelect.appendChild(option);
+                });
+            }
+
+            document.getElementById("metricsList").innerHTML = "";
+        }
+
+        function showMetrics() {
+            const category = document.getElementById("category").value;
+            const subcategory = document.getElementById("subcategory").value;
+            const metricsList = document.getElementById("metricsList");
+
+            metricsList.innerHTML = "";
+
+            if (category && subcategory && mapping[category] && mapping[category][subcategory]) {
+                mapping[category][subcategory].forEach(metric => {
+                    const li = document.createElement("li");
+                    li.textContent = metric;
+                    metricsList.appendChild(li);
+                });
+            }
+        }
+
+        // Populate category dropdown on load
+        window.onload = function() {
+            const categorySelect = document.getElementById("category");
+            Object.keys(mapping).forEach(cat => {
+                const option = document.createElement("option");
+                option.value = cat;
+                option.textContent = cat;
+                categorySelect.appendChild(option);
+            });
+        };
+    </script>
+</body>
+</html>
