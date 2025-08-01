@@ -144,9 +144,6 @@ To find out your relevant metrics you can either use the **Metrics Mapping** tab
 
 ---
 
-
-
-https://github.com/user-attachments/assets/b800529c-3ab3-4ec9-802d-c186702b695f
-
+https://github.com/user-attachments/assets/cfcef5f2-cbc1-45dc-a076-95b3d9c985de
 
 To get the metrics measurement guides , please visit the [metrics](./Performance-Metrics.md) page.
