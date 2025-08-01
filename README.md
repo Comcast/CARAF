@@ -16,6 +16,9 @@ We have created a [CARAF calculator](Resources/CARAF%20Calculator.xlsm) (you can
 
 https://github.com/user-attachments/assets/4bf38dee-8ace-43a4-8df2-70798ca745d6
 
+# Performance Evaluation with PQBench
+CARAF has a performance evaluation tool called PQBench. Please click [here](Tools/PQBench) or check out the directory [Tools/PQBench](Tools/PQBench) to learn more.
+
 # CARAF is Referenced by Government and Industry
 
 ![](Figures/Referencing%20Organizations.png)
