@@ -18,7 +18,7 @@ To provide a quick overview, the table below summarizes key categories, their su
       <td>🔋 Energy Constraints</td>
       <td>Very High Energy Constraints</td>
       <td>- <strong>Energy-Harvesting:</strong> Powered by ambient sources like solar or RF.<br>- <strong>Ultra-Low Power:</strong> Runs on minimal energy, often battery-based.</td>
-      <td>Environmental sensors, solar-powered wearables)</td>
+      <td>Environmental sensors, solar-powered wearables.</td>
     </tr>
     <tr>
       <td></td>
