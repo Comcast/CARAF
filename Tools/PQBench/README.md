@@ -1,4 +1,4 @@
-# 🔍 PQBench – Post-Quantum Cryptography Benchmarking Tool 
+# 🔍 PQBench – A Performance Benchmarking Solution for Cryptographic Integrations
 
 **PQBench** offers a curated collection of cryptographic use cases, each mapped to relevant evaluation metrics tailored for Post-Quantum Cryptography (PQC). Designed for security architects, cryptography researchers, and system designers, it supports a structured and practical approach to assessing cryptographic systems during and after migration.
 
