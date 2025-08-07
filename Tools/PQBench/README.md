@@ -6,7 +6,7 @@ It provides:
 - A categorized list of cryptographic use cases.
 - Mappings between use cases and appropriate evaluation metrics.
 - Practical guidance on selecting metrics based on deployment context.
-- Step-by-step instructions for measuring system performance post-migration.
+- Step-by-step instructions for measuring system performance during migration.
 
 ---
 ## 🧭 How to Use
