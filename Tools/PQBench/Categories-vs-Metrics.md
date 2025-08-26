@@ -17,7 +17,7 @@ To find out your relevant metrics you can either use the **Metrics Mapping** tab
         <th colspan="5" rowspan="2">Energy Constraints</th>
         <th colspan="6">Network Performance</th>
         <th colspan="3" rowspan="2">Computational Resources</th>
-        <th colspan="3" rowspan="2">Network Security</th>
+        <th colspan="3" rowspan="2">Security Requirements</th>
         <th colspan="2" rowspan="2">Cryptographic Implementation</th>
     </tr>
     <tr>
