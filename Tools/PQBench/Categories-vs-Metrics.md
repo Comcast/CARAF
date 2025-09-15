@@ -89,7 +89,7 @@ To find out your relevant metrics you can either use the **Metrics Mapping** tab
         <td>✅</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td>
     </tr>
     <tr>
-        <td rowspan="6">Computational Performance</td>
+        <td rowspan="7">Computational Performance</td>
         <td>Overall Performance</td>
        <td>❌</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td>
         <td>❌</td><td>❌</td><td>❌</td><td>❌</td><td>❌</td><td>❌</td>
@@ -112,6 +112,13 @@ To find out your relevant metrics you can either use the **Metrics Mapping** tab
     </tr>
     <tr>
         <td>Verification Time</td>
+        <td>❌</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td>
+        <td>❌</td><td>❌</td><td>❌</td><td>❌</td><td>❌</td><td>❌</td>
+        <td>✅</td><td>✅</td><td>✅</td>
+        <td>❌</td><td>❌</td><td>✅</td><td>✅</td><td>✅</td>
+    </tr>
+    <tr>
+        <td>Shared Key Derivation Time</td>
         <td>❌</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td>
         <td>❌</td><td>❌</td><td>❌</td><td>❌</td><td>❌</td><td>❌</td>
         <td>✅</td><td>✅</td><td>✅</td>
