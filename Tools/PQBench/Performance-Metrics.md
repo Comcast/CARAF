@@ -12,6 +12,7 @@
 |                                | 🔑 Key Generation Time      | Key generation is a critical step in secure communications. PQC algorithms often have longer key generation times due to larger key sizes and more complex math.                       | [Guide](#key-generation-time)                         |
 |                                | ✍️ Signature Generation Time | Signature generation speed affects authentication latency in secure protocols like TLS, SSH, and code signing.                                                                         | [Guide](#signature-generation-time)                         |
 |                                | ✅ Verification Time        | Verification is often performed more frequently than signing (e.g., in certificate chains), so performance here is critical.                                                           | [Guide](#verification-time)                         |
+|                                | 🔑 Shared Key Derivation Time      | Shared key derivation is a critical step that enables encryption and decryption like in TLS.                      | [Guide](#shared-key-derivation-time)                         |
 |                                | 🔐 Encryption Time          | Encryption speed affects throughput and responsiveness in secure channels like TLS, VPNs, and encrypted storage.                                                                       | [Guide](#encryption-time)                         |
 |                                | 🔓 Decryption Time          | Decryption speed is critical for real-time applications and secure data access.                                                                                                        | [Guide](#decryption-time)                         |
 | 🔋 Energy Performance          | 🔋 Energy Consumption       | In IoT and embedded systems, energy efficiency is critical. Post-quantum algorithms may require more computation, which can significantly impact battery life and thermal performance. | [Guide](#energy-consumption)                         |
@@ -350,7 +351,6 @@ sys     0m0.013s
 ## Verification Time
 Measures the time required to verify a digital signature.
 
-
 ### 🛠️ How to Measure
 Use openssl dgst with the corresponding public key to verify the signature.
 
@@ -369,6 +369,35 @@ user    0m0.085s
 sys     0m0.013s
 ```
 **Explanation**: This output shows the time taken to verify a digital signature. Since verification is often more frequent (e.g., in certificate chains), efficiency here is critical.
+
+## Shared Key Derivation Time
+Measures the time required to derive a shared key for a secure connection (e.g., TLS), typically during a PQC key exchange.
+
+### 🛠️ How to Measure
+Use `openssl` with ML-KEM (Kyber) to simulate the time it takes to perform both **encapsulation** and **decapsulation** in a post-quantum key exchange.
+
+### 🧪 Example  
+```bash
+# Generate ML-KEM key pair (Kyber512)
+openssl genpkey -algorithm ML-KEM-512 -out kem_key.pem
+
+# Extract public key
+openssl pkey -in kem_key.pem -pubout -out kem_pub.pem
+
+# Measure encapsulation time (sender side)
+time openssl pkeyutl -encap -inkey kem_pub.pem -out ciphertext.bin -secret encapsulated_key.bin
+
+# Measure decapsulation time (receiver side)
+time openssl pkeyutl -decap -inkey kem_key.pem -in ciphertext.bin -secret shared_secret.bin
+```
+
+#### Sample output
+```
+real	0m0.009s
+user	0m0.003s
+sys		0m0.003s 
+```
+**Explanation:** This output shows the time taken to derive a shared secret using ML-KEM-512. It reflects the performance of the key derivation step, which is a critical part of secure communication protocols. The derived secret can then be used as input to symmetric encryption algorithms like AES.
 
 ## Encryption Time
 Measures the time required to encrypt data using a symmetric cipher, typically after a PQC key exchange.
