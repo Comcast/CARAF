@@ -20,7 +20,7 @@
 |                                | 💾 Memory Consumption       | Post-quantum algorithms consume memory to run its cryptographic primitives and processes. | [Guide](#memory-consumption) 
 | 🔋 Energy Performance          | 🔋 Energy Consumption       | In IoT and embedded systems, energy efficiency is critical. Post-quantum algorithms may require more computation, which can significantly impact battery life and thermal performance. | [Guide](#energy-consumption)                         |
 | ⚙️ Compound Metrics           | 🚀 Certificate Throughput   | Post-quantum signature algorithms need to be measured in terms of how many certificates can be generated and signed per period of time. | [Guide](#certificate-throughput) 
-|                                | 🚀 TLS Throughput           | Post-quantum KEM algorithms need to be measured in terms of how many TLS connections can be created per period of time. | [Guide](#signature-size) 
+|                                | 🚀 TLS Throughput           | Post-quantum KEM algorithms need to be measured in terms of how many TLS connections can be created per period of time. | [Guide](#tls-throughput) 
 
 # CLI Commands with OpenSSL
 We rely on OpenSSL CLI commands heavily to perform measurements with PQBench. The most relevant sets of cryptographic operations for PQC are for signatures and key exchange mechanism (KEM). Since version 3.5, OpenSSL has started having native supports for 3 standardized algorithms: ML-DSA, SLH-DSA, and ML-KEM. The following list shows all the supported PQC algorithms by printing them out using the OpenSSL command.
