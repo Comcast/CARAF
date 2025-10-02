@@ -3,18 +3,15 @@
 This file gives an overview of the changes in each version of PQBench.
 
 ## PQBench Releases
-- [PQBench 1.2 (CARAF 3.2)](CHANGES.md#pqbench-12-caraf-32)
-- [PQBench 1.1 (CARAF 3.1)](CHANGES.md#pqbench-11-caraf-31)
-- [PQBench 1.0 (CARAF 3.0)](CHANGES.md#pqbench-10-caraf-30)
+- [PQBench 1.1 (CARAF 3.1)](#pqbench-11-caraf-31)
+- [PQBench 1.0 (CARAF 3.0)](#pqbench-10-caraf-30)
 
-## PQBench 1.2 (CARAF 3.2)
+## PQBench 1.1 (CARAF 3.1)
 This release focuses on adding new metrics:
+- Computational performance metrics: shared key derivation time.
 - Memory performance metrics: key size, signature size, and memory consumption.
 - Compound metrics: certificate throughput, TLS throughput.
 Additionally, we also added more details to the types (i.e., signature and KEM) and list of PQC algorithms.
-
-## PQBench 1.1 (CARAF 3.1)
-We add a computational performance metric called shared key derivation time that is necessary in measuring the performance of key exchange algorithms like Diffie-Hellman (e.g., ECDHE) in classical cryptography and ML-KEM in PQC.
 
 ## PQBench 1.0 (CARAF 3.0)
 
