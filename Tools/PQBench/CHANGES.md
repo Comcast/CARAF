@@ -11,6 +11,7 @@ This release focuses on adding new metrics:
 - Computational performance metrics: shared key derivation time.
 - Memory performance metrics: key size, signature size, and memory consumption.
 - Compound metrics: certificate throughput, TLS throughput.
+
 Additionally, we also added more details to the types (i.e., signature and KEM) and list of PQC algorithms.
 
 ## PQBench 1.0 (CARAF 3.0)
