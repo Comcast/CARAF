@@ -33,10 +33,10 @@
         const mapping = {
             "Energy Constraints": {
                 "Very High Energy Constraints": ["Energy Efficiency"],
-                "High Energy Constraints": ["Throughput", "Latency", "Packet Loss", "Jitter", "Interoperability", "Scalability", "Overall Performance", "Key Generation Time", "Signature Generation Time", "Verification Time", "Shared Key Derivation Time", "Encryption Time", "Decryption Time", "Energy Efficiency"],
-                "Moderate Energy Constraints": ["Throughput", "Latency", "Packet Loss", "Jitter", "Interoperability", "Scalability", "Overall Performance", "Key Generation Time", "Signature Generation Time", "Verification Time", "Shared Key Derivation Time", "Encryption Time", "Decryption Time", "Energy Efficiency"],
-                "Low Energy Constraints": ["Throughput", "Interoperability", "Scalability", "Shared Key Derivation Time", "Overall Performance", "Key Generation Time", "Signature Generation Time", "Verification Time", "Encryption Time", "Decryption Time", "Energy Efficiency"],
-                "Minimal Energy Constraints": ["Throughput", "Latency", "Interoperability", "Scalability", "Overall Performance", "Key Generation Time", "Signature Generation Time", "Verification Time", "Shared Key Derivation Time", "Encryption Time", "Decryption Time"]
+                "High Energy Constraints": ["Throughput", "Latency", "Packet Loss", "Jitter", "Interoperability", "Scalability", "Overall Performance", "Key Generation Time", "Signature Generation Time", "Verification Time", "Shared Key Derivation Time", "Encryption Time", "Decryption Time", "Key Size", "Signature Size", "Memory Consumption", "Energy Efficiency", "Certificate Throughput", "TLS Throughput"],
+                "Moderate Energy Constraints": ["Throughput", "Latency", "Packet Loss", "Jitter", "Interoperability", "Scalability", "Overall Performance", "Key Generation Time", "Signature Generation Time", "Verification Time", "Shared Key Derivation Time", "Encryption Time", "Decryption Time", "Key Size", "Signature Size", "Memory Consumption", "Energy Efficiency", "Certificate Throughput", "TLS Throughput"],
+                "Low Energy Constraints": ["Throughput", "Interoperability", "Scalability", "Shared Key Derivation Time", "Overall Performance", "Key Generation Time", "Signature Generation Time", "Verification Time", "Encryption Time", "Decryption Time", "Key Size", "Signature Size", "Memory Consumption", "Energy Efficiency", "Certificate Throughput", "TLS Throughput"],
+                "Minimal Energy Constraints": ["Throughput", "Latency", "Interoperability", "Scalability", "Overall Performance", "Key Generation Time", "Signature Generation Time", "Verification Time", "Shared Key Derivation Time", "Encryption Time", "Decryption Time", "Key Size", "Signature Size", "Memory Consumption", "Certificate Throughput", "TLS Throughput"]
             },
             "Network Performance": {
                 "Low Latency Use Cases": ["Latency", "Packet Loss", "Jitter", "Interoperability", "Scalability"],
@@ -47,18 +47,18 @@
                 "Low Throughput Use Cases": ["Interoperability", "Scalability"]
             },
             "Computational Resources": {
-                "High Computational Power": ["Throughput", "Latency", "Packet Loss", "Jitter", "Interoperability", "Scalability", "Overall Performance", "Key Generation Time", "Signature Generation Time", "Verification Time", "Shared Key Derivation Time", "Encryption Time", "Decryption Time", "Energy Efficiency"],
-                "Moderate Computational Power": ["Throughput", "Latency", "Packet Loss", "Jitter", "Interoperability", "Scalability", "Overall Performance", "Key Generation Time", "Signature Generation Time", "Verification Time", "Shared Key Derivation Time", "Encryption Time", "Decryption Time", "Energy Efficiency"],
-                "Low Computational Power": ["Throughput", "Latency", "Packet Loss", "Jitter", "Interoperability", "Scalability", "Overall Performance", "Key Generation Time", "Signature Generation Time", "Verification Time", "Shared Key Derivation Time", "Encryption Time", "Decryption Time", "Energy Efficiency"]
+                "High Computational Power": ["Throughput", "Latency", "Packet Loss", "Jitter", "Interoperability", "Scalability", "Overall Performance", "Key Generation Time", "Signature Generation Time", "Verification Time", "Shared Key Derivation Time", "Encryption Time", "Decryption Time", "Key Size", "Signature Size", "Memory Consumption", "Energy Efficiency", "Certificate Throughput", "TLS Throughput"],
+                "Moderate Computational Power": ["Throughput", "Latency", "Packet Loss", "Jitter", "Interoperability", "Scalability", "Overall Performance", "Key Generation Time", "Signature Generation Time", "Verification Time", "Shared Key Derivation Time", "Encryption Time", "Decryption Time", "Key Size", "Signature Size", "Memory Consumption", "Energy Efficiency", "Certificate Throughput", "TLS Throughput"],
+                "Low Computational Power": ["Throughput", "Latency", "Packet Loss", "Jitter", "Interoperability", "Scalability", "Overall Performance", "Key Generation Time", "Signature Generation Time", "Verification Time", "Shared Key Derivation Time", "Encryption Time", "Decryption Time", "Key Size", "Signature Size", "Memory Consumption", "Energy Efficiency", "Certificate Throughput", "TLS Throughput"]
             },
             "Security Requirements": {
                 "High Security Use Cases": ["Interoperability", "Scalability"],
                 "Moderate Security Use Cases": ["Interoperability", "Scalability"],
-                "Minimum Security Use Cases": ["Throughput", "Latency", "Interoperability", "Scalability", "Overall Performance", "Key Generation Time", "Signature Generation Time", "Verification Time", "Shared Key Derivation Time", "Encryption Time", "Decryption Time", "Energy Efficiency"]
+                "Minimum Security Use Cases": ["Throughput", "Latency", "Interoperability", "Scalability", "Overall Performance", "Key Generation Time", "Signature Generation Time", "Verification Time", "Shared Key Derivation Time", "Encryption Time", "Decryption Time", "Key Size", "Signature Size", "Memory Consumption", "Energy Efficiency", "Certificate Throughput", "TLS Throughput"]
             },
             "Cryptographic Implementation": {
-                "Hardware-Based Cryptographic Use Cases": ["Throughput", "Latency", "Interoperability", "Scalability", "Overall Performance", "Key Generation Time", "Signature Generation Time", "Verification Time", "Shared Key Derivation Time", "Encryption Time", "Decryption Time", "Energy Efficiency"],
-                "Software-Based Cryptographic Use Cases": ["Throughput", "Latency", "Interoperability", "Scalability", "Overall Performance", "Key Generation Time", "Signature Generation Time", "Verification Time", "Shared Key Derivation Time", "Encryption Time", "Decryption Time", "Energy Efficiency"]
+                "Hardware-Based Cryptographic Use Cases": ["Throughput", "Latency", "Interoperability", "Scalability", "Overall Performance", "Key Generation Time", "Signature Generation Time", "Verification Time", "Shared Key Derivation Time", "Encryption Time", "Decryption Time", "Key Size", "Signature Size", "Memory Consumption", "Energy Efficiency", "Certificate Throughput", "TLS Throughput"],
+                "Software-Based Cryptographic Use Cases": ["Throughput", "Latency", "Interoperability", "Scalability", "Overall Performance", "Key Generation Time", "Signature Generation Time", "Verification Time", "Shared Key Derivation Time", "Encryption Time", "Decryption Time", "Key Size", "Signature Size", "Memory Consumption", "Energy Efficiency", "Certificate Throughput", "TLS Throughput"]
             }
         };
 

@@ -15,8 +15,80 @@
 |                                | 🔑 Shared Key Derivation Time      | Shared key derivation is a critical step that enables encryption and decryption like in TLS.                      | [Guide](#shared-key-derivation-time)                         |
 |                                | 🔐 Encryption Time          | Encryption speed affects throughput and responsiveness in secure channels like TLS, VPNs, and encrypted storage.                                                                       | [Guide](#encryption-time)                         |
 |                                | 🔓 Decryption Time          | Decryption speed is critical for real-time applications and secure data access.                                                                                                        | [Guide](#decryption-time)                         |
+| 💾 Memory Performance          | 💾 Key Size                 | Post-quantum algorithms are known to have much larger keys. | [Guide](#key-size) 
+|                                | 💾 Signature Size           | Post-quantum algorithms are known to have much larger signatures. | [Guide](#signature-size) 
+|                                | 💾 Memory Consumption       | Post-quantum algorithms consume memory to run its cryptographic primitives and processes. | [Guide](#memory-consumption) 
 | 🔋 Energy Performance          | 🔋 Energy Consumption       | In IoT and embedded systems, energy efficiency is critical. Post-quantum algorithms may require more computation, which can significantly impact battery life and thermal performance. | [Guide](#energy-consumption)                         |
+| ⚙️ Compound Metrics           | 🚀 Certificate Throughput   | Post-quantum signature algorithms need to be measured in terms of how many certificates can be generated and signed per period of time. | [Guide](#certificate-throughput) 
+|                                | 🚀 TLS Throughput           | Post-quantum KEM algorithms need to be measured in terms of how many TLS connections can be created per period of time. | [Guide](#signature-size) 
 
+# CLI Commands with OpenSSL
+We rely on OpenSSL CLI commands heavily to perform measurements with PQBench. The most relevant sets of cryptographic operations for PQC are for signatures and key exchange mechanism (KEM). Since version 3.5, OpenSSL has started having native supports for 3 standardized algorithms: ML-DSA, SLH-DSA, and ML-KEM. The following list shows all the supported PQC algorithms by printing them out using the OpenSSL command.
+
+```
+% openssl -v
+OpenSSL 3.5.2 5 Aug 2025 (Library: OpenSSL 3.5.2 5 Aug 2025)
+% openssl list -signature-algorithms
+
+...
+  { 2.16.840.1.101.3.4.3.17, id-ml-dsa-44, ML-DSA-44, MLDSA44 } @ default
+  { 2.16.840.1.101.3.4.3.18, id-ml-dsa-65, ML-DSA-65, MLDSA65 } @ default
+  { 2.16.840.1.101.3.4.3.19, id-ml-dsa-87, ML-DSA-87, MLDSA87 } @ default
+...
+  { 2.16.840.1.101.3.4.3.20, id-slh-dsa-sha2-128s, SLH-DSA-SHA2-128s } @ default
+  { 2.16.840.1.101.3.4.3.21, id-slh-dsa-sha2-128f, SLH-DSA-SHA2-128f } @ default
+  { 2.16.840.1.101.3.4.3.22, id-slh-dsa-sha2-192s, SLH-DSA-SHA2-192s } @ default
+  { 2.16.840.1.101.3.4.3.23, id-slh-dsa-sha2-192f, SLH-DSA-SHA2-192f } @ default
+  { 2.16.840.1.101.3.4.3.24, id-slh-dsa-sha2-256s, SLH-DSA-SHA2-256s } @ default
+  { 2.16.840.1.101.3.4.3.25, id-slh-dsa-sha2-256f, SLH-DSA-SHA2-256f } @ default
+  { 2.16.840.1.101.3.4.3.26, id-slh-dsa-shake-128s, SLH-DSA-SHAKE-128s } @ default
+  { 2.16.840.1.101.3.4.3.27, id-slh-dsa-shake-128f, SLH-DSA-SHAKE-128f } @ default
+  { 2.16.840.1.101.3.4.3.28, id-slh-dsa-shake-192s, SLH-DSA-SHAKE-192s } @ default
+  { 2.16.840.1.101.3.4.3.29, id-slh-dsa-shake-192f, SLH-DSA-SHAKE-192f } @ default
+  { 2.16.840.1.101.3.4.3.30, id-slh-dsa-shake-256s, SLH-DSA-SHAKE-256s } @ default
+...
+```
+Newer algorithms, e.g., FN-DSA (Falcon) that is in the process of standardizing by NIST, will always be implemented and supported first in [libOQS](https://github.com/open-quantum-safe/liboqs) and they will be adopted by downstream libraries, including [OpenSSL](https://github.com/open-quantum-safe/oqs-provider). To use these newer algorithms, one has to bind OpenSSL with libOQS when executing the commands: libOQS has to be installed and called using the `-provider` flag, i.e., `-provider oqsprovider`. See the following sections.
+
+## Signature Operations
+There are 3 cryptographic operations for signatures, namely key generation, signature, and verification. See the list of commands below.
+### Commands for Natively Supported Algorithms
+```
+# Key Generation
+openssl genpkey -algorithm <algorithm> -out private.pem
+openssl pkey -in private.pem -pubout -out public.pem
+
+# Signature
+openssl pkeyutl -sign -inkey private.pem -in certfile -out signature.bin
+
+# Verification
+openssl pkeyutl -verify -pubin -inkey public.pem -in certfile -sigfile signature.bin
+```
+### Commands for Algorithms Requiring LibOQS Binding
+```
+# Key Generation
+openssl genpkey -provider default -provider oqsprovider -algorithm <algorithm> -out private.pem
+openssl pkey -provider default -provider oqsprovider -in private.pem -pubout -out public.pem
+
+# Signature
+openssl pkeyutl -provider default -provider oqsprovider -sign -inkey private.pem -in certfile -out signature.bin
+
+# Verification
+openssl pkeyutl -provider default -provider oqsprovider -verify -pubin -inkey public.pem -in certfile -sigfile signature.bin
+```
+## KEM Operations
+There are 3 cryptographic operations for KEM, namely key generation, encapsulation, and decapsulation. ML-KEM is the only standardized PQC algorithm and it is natively supported in OpenSSL 3.5+. See the list of commands below.
+```
+# Key Generation
+openssl genpkey -algorithm <algorithm> -out private.pem 
+openssl pkey -in private.pem -pubout -out public.pem
+
+# Encapsulation
+openssl pkeyutl -encap -pubin -inkey public.pem -out encapsulated.bin -secret shared_secret.bin
+
+# Decapsulation
+openssl pkeyutl -decap -inkey private.pem -in encapsulated.bin -out shared_secret.bin
+```
 
 # 📡 Network Performance Metrics
 
@@ -187,8 +259,8 @@ openssl s_client -connect <server-ip>:4433 -tls1_3 -provider oqsprovider
 CONNECTED(00000003)
 ---
 Certificate chain
- 0 s:CN = Falcon Test Cert
-   i:CN = Falcon Test CA
+ 0 s:CN = <algorithm> Test Cert
+   i:CN = <algorithm> Test CA
 ---
 SSL handshake has read 1234 bytes and written 567 bytes
 Verification: OK
@@ -197,7 +269,6 @@ Verification: OK
 
 ## Scalability
 Evaluates how cryptographic performance changes as data volume, key size, or connection count increases.
-
 
 ### 🛠️ How to Measure
 1. Use a test harness or script to simulate increasing:
@@ -242,6 +313,7 @@ Use tools like:
 ### 🧪 Example : 
 - Measure Memory Usage with `valgrind --tool=massif`
 
+The example below is for FN-DSA (Falcon) provided through binding with libOQS. Natively supported algorithms do not need the `-provider oqsprovider` parameter.
 ```bash
 # Generate a Falcon-512 key
 openssl genpkey -provider oqsprovider -algorithm falcon512 -out falcon_key.pem
@@ -310,8 +382,7 @@ Ir  file:function
 Measures the time required to generate a cryptographic key.
 ### 🛠️ How to Measure
 
-Use `openssl genpkey` with a post-quantum algorithm via the `oqsprovider`.
-
+The example below is for FN-DSA (Falcon) provided through binding with libOQS. Natively supported algorithms do not need the `-provider oqsprovider` parameter.
 ### 🧪 Example
 ```bash
 # Generate a Falcon-512 key and measure time
@@ -329,7 +400,7 @@ sys     0m0.044s
 Measures the time required to generate a digital signature.
 
 ### 🛠️ How to Measure
-Use openssl dgst to sign a message using a PQC private key.
+Use openssl dgst to sign a message using a PQC private key for FN-DSA (Falcon).
 
 ### 🧪 Example:
 ```bash
@@ -351,10 +422,12 @@ sys     0m0.013s
 ## Verification Time
 Measures the time required to verify a digital signature.
 
+
 ### 🛠️ How to Measure
 Use openssl dgst with the corresponding public key to verify the signature.
 
 ### 🧪 Example
+The example below is for FN-DSA (Falcon) provided through binding with libOQS.
 ```bash
 # Extract the public key
 openssl pkey -in falcon_key.pem -pubout -out falcon_pubkey.pem
@@ -442,6 +515,70 @@ sys     0m0.007s
 ```
 **Explanation:** This output shows the time taken to decrypt a file using AES-256-CBC. Decryption speed is essential for real-time access to secure content.
 
+# 💾 Memory Performance 
+
+## Key Size
+
+### 🛠️ How to Measure
+Measures the key size when using a PQC algorithm. This helps evaluate storage overhead introduced by PQC.
+
+### 🧪 Example:
+```
+# Generate ML-DSA key pair
+openssl genpkey -algorithm ML-DSA-65 -out mldsa_private.key
+openssl pkey -in mldsa_private.key -pubout -out mldsa_public.key
+
+# Measure key sizes
+ls -lh mldsa_private.key mldsa_public.key
+```
+
+#### Sample output
+```
+-rw-r--r-- 1 user user  16K Sep 22 14:42 mldsa_private.key
+-rw-r--r-- 1 user user  8.5K Sep 22 14:42 mldsa_public.key
+```
+
+**Explanation:** PQC keys are significantly larger than keys from classical algorithms (e.g., RSA or ECDSA), which impacts storage, transmission, and memory usage in constrained environments.
+
+## Signature Size
+
+### 🛠️ How to Measure
+Measures the signature size when using a PQC algorithm. This helps evaluate storage overhead introduced by PQC. The examples in this section use ML-DSA that is natively supported in OpenSSL 3.5+. For others like FN-DSA (Falcon) that requires binding with libOQS, see Section [CLI Commands with OpenSSL](./Performance-Metrics.md#commands-for-algorithms-requiring-liboqs-binding) above.
+
+### 🧪 Example:
+```
+# Generate ML-DSA signature
+openssl pkeyutl -sign -inkey mldsa_private.key -in message.txt -out signature.bin
+
+# Measure key sizes
+ls -lh signature.bin
+```
+
+#### Sample output
+```
+-rw-r--r-- 1 user user  13K Sep 22 14:42 signature.bin
+```
+
+**Explanation:** PQC signatures are significantly larger than keys from classical algorithms (e.g., RSA or ECDSA), which impacts storage, transmission, and memory usage in constrained environments.
+
+## Memory Consumption
+Measures the amount of memory used by a PQC algorithm during a cryptographic operation (e.g., key generation, signing, verification, shared key derivation, etc.). This helps evaluate the runtime resource requirements of PQC, especially in constrained environments.
+
+### 🛠️ How to Measure
+Use tools like valgrind to monitor memory usage during a PQC cryptographic operation.
+
+### 🧪 Example
+```
+# Use Valgrind to measure memory consumption during ML-DSA key generation
+valgrind --tool=massif --stacks=yes --massif-out-file=massif.out \
+openssl genpkey -algorithm ML-DSA-65 -out mldsa_private.key
+```
+
+#### Sample output
+Massif file with heap, heap extra, and stack size information.
+
+**Explanation:** This value reflects the peak memory usage during the cryptographic operation.
+
 # 🔋 Energy Performance 
 
 ## Energy Consumption
@@ -490,7 +627,40 @@ Performance counter stats for 'openssl dgst ...':
 **Explanation:** This output shows the estimated energy consumption during a cryptographic operation. It uses CPU energy counters (e.g., Intel RAPL) to assess power efficiency.
 ⚠️ Note: This requires a CPU that supports Intel RAPL (Running Average Power Limit). For embedded boards, use external meters for accurate results.
 
+# ⚙️ Compound Metrics
+This section presents some metrics that are measured as a compound of a number of basic metrics presented above.
 
+## Certificate Throughput
+Measures the computational certificate throughput, namely the inverse of the key generation, signature, and verification latencies.
+
+### 🛠️ How to Measure
+
+1. Compute the average of total latency from [key generation](./Performance-Metrics.md#key-generation-time), [signature](./Performance-Metrics.md#signature-generation-time), and [verification](./Performance-Metrics.md#verification-time) operations from a number of repeated experiments.
+2. Compute certificate throughput by taking the inverse of this total latency.
+
+### 🧪 Example :
+1. Let us assume that the average key generation, signature, and verification latencies are 109.4µs, 464.4µs, and 114.2µs from 100 experiments of running the CLI commands.
+2. This gives an average total latency of 688µs, i.e., 688µs was required to generate a certificate. Thus, the throughput will be 1453 certificates per second.
+
+## TLS Throughput
+Measures the TLS certificate throughput when using PQC for KEM (i.e., ML-KEM). This throughput value represents the total latency from key generation, encapsulation, and decapsulation as part of the entire TLS handshake and negotiation process.
+
+### 🛠️ How to Measure
+
+1. Set up a TLS server and client to use ML-KEM.
+2. Write a script (e.g., bash script) to repetitively attempt TLS connections for a period of time and count the number of successful TLS connections.
+
+### 🧪 Example :
+1. Below are example CLI commands to set up a TLS server and client.
+```
+# TLS server with OpenSSL
+openssl s_server -accept 4433 -cert server.crt -key server.key
+
+# TLS client with OpenSSL
+openssl s_client -connect localhost:4433
+```
+2. Automate the server setup and the repetitive TLS connections from the client side for 1 minute using a script.
+3. Count the number of successful TLS connections for 1 minute, e.g., 3702 connections per minute for ML-KEM-768 in our recent experiment.
 ---
 
 For a detailed understanding of device categories, please refer to [Categories.md](https://github.com/comcast-spider/CARAF-Knowledge-Base/blob/evaluation-metrics/Others/Performance-evaluation/Use-Case-Catagories.md), which provides a comprehensive classification based on energy, performance, and security considerations. Additionally, to see how metrics are mapped to device categories and use cases, consult [Categories-vs-Metrics.md](https://github.com/comcast-spider/CARAF-Knowledge-Base/blob/evaluation-metrics/Others/Performance-evaluation/Catagories-vs-Metrics.md) for insights into what metrics apply to specific use cases.

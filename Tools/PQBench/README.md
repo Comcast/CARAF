@@ -8,6 +8,8 @@ It provides:
 - Practical guidance on selecting metrics based on deployment context.
 - Step-by-step instructions for measuring system performance during migration.
 
+[CHANGES.md](CHANGES.md) tracks the versions of PQBench.
+
 ---
 ## 🧭 How to Use
 

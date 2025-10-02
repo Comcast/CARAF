@@ -139,9 +139,46 @@ To find out your relevant metrics you can either use the **Metrics Mapping** tab
         <td>❌</td><td>❌</td><td>✅</td><td>✅</td><td>✅</td>
     </tr>
     <tr>
+        <td rowspan="3">Memory Performance</td>
+        <td>Key Size</td>
+        <td>❌</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td>
+        <td>❌</td><td>❌</td><td>❌</td><td>❌</td><td>❌</td><td>❌</td>
+        <td>✅</td><td>✅</td><td>✅</td>
+        <td>❌</td><td>❌</td><td>✅</td><td>✅</td><td>✅</td>
+    </tr>
+    <tr>
+        <td>Signature Size</td>
+        <td>❌</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td>
+        <td>❌</td><td>❌</td><td>❌</td><td>❌</td><td>❌</td><td>❌</td>
+        <td>✅</td><td>✅</td><td>✅</td>
+        <td>❌</td><td>❌</td><td>✅</td><td>✅</td><td>✅</td>
+    </tr>
+    <tr>
+        <td>Memory Consumption</td>
+        <td>❌</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td>
+        <td>❌</td><td>❌</td><td>❌</td><td>❌</td><td>❌</td><td>❌</td>
+        <td>✅</td><td>✅</td><td>✅</td>
+        <td>❌</td><td>❌</td><td>✅</td><td>✅</td><td>✅</td>
+    </tr>
+    <tr>
         <td rowspan="1">Energy Consumption</td>
         <td>Energy Efficiency</td>
         <td>✅</td><td>✅</td><td>✅</td><td>✅</td><td>❌</td>
+        <td>❌</td><td>❌</td><td>❌</td><td>❌</td><td>❌</td><td>❌</td>
+        <td>✅</td><td>✅</td><td>✅</td>
+        <td>❌</td><td>❌</td><td>✅</td><td>✅</td><td>✅</td>
+    </tr>
+    <tr>
+        <td rowspan="2">Compound Metrics</td>
+        <td>Certificate Throughput</td>
+        <td>❌</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td>
+        <td>❌</td><td>❌</td><td>❌</td><td>❌</td><td>❌</td><td>❌</td>
+        <td>✅</td><td>✅</td><td>✅</td>
+        <td>❌</td><td>❌</td><td>✅</td><td>✅</td><td>✅</td>
+    </tr>
+    <tr>
+        <td>TLS Throughput</td>
+        <td>❌</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td>
         <td>❌</td><td>❌</td><td>❌</td><td>❌</td><td>❌</td><td>❌</td>
         <td>✅</td><td>✅</td><td>✅</td>
         <td>❌</td><td>❌</td><td>✅</td><td>✅</td><td>✅</td>
