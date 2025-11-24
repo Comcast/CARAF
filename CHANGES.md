@@ -4,7 +4,10 @@ This file gives an overview of the changes in each version of CARAF.
 
 ## PQBench Releases
 - [CARAF 1.0](#caraf-10)
-- [CARAF 2.0](#pqbench-10-caraf-30)
+- [CARAF 2.0](#caraf-20)
+- [CARAF 3.0](#caraf-30)
+- [CARAF 3.1](#caraf-31)
+- [CARAF 3.2](#caraf-32)
 
 ## CARAF 1.0
 This release includes the 5 phases of CARAF with knowledge base that includes articles related to PQC migration.
