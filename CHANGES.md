@@ -25,4 +25,4 @@ This version includes the addition of [PQBench](./Tools/PQBench/CHANGES.md) into
 This version includes the addition of [PQBench](./Tools/PQBench/CHANGES.md) into CARAF.
 
 ## CARAF 3.2
-(Placeholder for new CARAF Phase 2 calculation).
+This version simplifies CARAF Phase 1 questions: "Yes" means +1.
