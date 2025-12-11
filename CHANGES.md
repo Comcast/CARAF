@@ -25,4 +25,7 @@ This version includes the addition of [PQBench](./Tools/PQBench/CHANGES.md) into
 This version includes the addition of [PQBench](./Tools/PQBench/CHANGES.md) into CARAF.
 
 ## CARAF 3.2
-This version simplifies CARAF Phase 1 questions: "Yes" means +1.
+This version simplifies CARAF Phase 1 questions: 
+
+1. All questions are now under one category.
+2. All questions have consistent scoring: "Yes" means +1.
