@@ -1,24 +1,105 @@
-# Phase 2: Risk Estimation
-This phase estimates the risk level of the asset, representing the value and importance of the asset to be secured with PQC algorithms. Here, we calculate the risk level by considering time and cost.
+# Phase 2: Risk Estimation (Updated)
 
-## Time to exposure
-Mosca's theorem is used as reference:
-- Lifespan of the asset is $X$ from [Phase 1](../CARAF%20Phases/Phase%201:%20Crypto%20Agility%20Measurement.md).
-- Time needed for migration is $Y$ from [Phase 1](../CARAF%20Phases/Phase%201:%20Crypto%20Agility%20Measurement.md).
-- Time before threat results in a compromise (now - 2035) is $Z$.
-- Calculate the value of $Z - (X+Y)$.
-  - If the result is positive, your asset will be *phased out* before PQC migration is required.
-  - If the result is negative, your asset will be *vulnerable* for $Z - (X+Y)$ number of years.
+This phase estimates the PQC-related risk level of an asset by evaluating **time-based exposure**, **data confidentiality requirements**, and **cost/effort of PQC migration**.  
+The revised model improves accuracy by aligning with NIST recommendations, enforcing realistic migration timelines, and preventing misclassification of high-risk assets.
 
-## Cost to migrate
-The evaluation will be based on the following factors:
-1. Will performance overhead be critical to the function of the asset? For example, the answer may be yes for streaming application, or no for databases accessed once per month.
-2. Will there be a significant cost for updating to the new algorithms each time? For example, the answer may be yes if asset is implemented in hardware, or no if asset is implemented in software.
-3. Is decrypting then re-encrypting the asset needed (e.g., long-lived data)?
-4. Will there be a cost to migrate to PQC (i.e., additional internal resources dedicated to migration or negotiation with new vendors)?
+## Time to Exposure (Revised Model)
 
-Based on the answers to the above questions, there are two levels of risk estimate:
-- *High risk*: If your asset will be *vulnerable* timeline-wise and you answered yes to any of the questions in the `Cost to migrate` section above, risk = high.
-- *Low risk*: Otherwise, risk = low.
+This step uses the updated **Exposure Index** instead of the previous `X + Y > Z` rule.
+
+The following inputs are used:
+
+- **X — Asset Lifespan** (automatically adjusted; see below)  
+- **Data Retention Lifetime** — *new mandatory input*  
+- **Y — Migration Lead Time**  
+- **Z — Threat Horizon** (standardized presets)
+
+### 1. Data Retention Lifetime (New Mandatory Input)
+
+Many assets store or process long-lived data requiring confidentiality for **10–25+ years**.
+
+To avoid underestimating exposure, **X** is recalculated as: X = max(Asset Lifespan, Data Retention Lifetime)
+
+This ensures the model reflects the true confidentiality window.
+
+
+### 2. Migration Lead Time (Y) — Minimum Enforcement
+
+Realistic migration time is required due to dependencies on:
+
+- Library upgrades  
+- PKI transitions  
+- Vendor support cycles  
+- Firmware/embedded updates  
+- Performance and interoperability testing  
+
+To prevent unrealistic entries (e.g., `Y = 0`), the following **minimum thresholds** apply:
+
+- **Software systems:** ≥ 0.5 years  
+- **PKI, hardware, HSM, embedded systems:** ≥ 1–3 years  
+
+The workbook warns users when `Y = 0` or values below minimum thresholds are entered.
+
+
+### 3. Threat Horizon (Z) — Standardized Presets
+
+To avoid overly optimistic or inconsistent predictions, predefined Z values are provided:
+
+- **Conservative:** Z = 5  
+- **Moderate:** Z = 7  
+- **Standard:** Z = 10  
+
+Users may override these values, but deviations are highlighted.
+
+### 4. Exposure Index Calculation
+
+The updated Exposure formula: Exposure = (DataRetention + MigrationLeadTime) – ThreatHorizon
+E = (X + Y) – Z
+
+This reflects when an asset becomes cryptographically unsafe relative to expected quantum-threat timelines.
+
+
+### 5. Exposure Classification
+
+| Exposure Value        | Classification | Meaning                                                             |
+|-----------------------|----------------|---------------------------------------------------------------------|
+| **Exposure ≥ 0**      | **EXPOSED**    | Asset will become vulnerable before migration completes.            |
+| **-3 < Exposure < 0** | **AT RISK**    | Asset approaches vulnerability; migration planning required.        |
+| **Exposure ≤ -3**     | **PHASE-OUT**  | Asset retires before the threat horizon; lower migration urgency.   |
+
+Workbook safeguards also flag cases such as **DataRetention > Z**, indicating unavoidable high risk.
+
+---
+
+## Cost to Migrate
+
+Cost factors still influence final risk severity. The following questions evaluate migration effort:
+
+- Will performance overhead affect asset function?  
+- Will updating to new PQC algorithms introduce recurring cost (hardware vs software)?  
+- Is decrypt-and-re-encrypt required for long-lived data?  
+- Will additional internal resources or vendor negotiations be required?
+
+---
+
+## Overall Risk Estimate
+
+Risk is determined by combining the **Exposure classification** with **cost-to-migrate impact**.
+
+### **High Risk**
+- Exposure ≥ 0 **or**
+- Asset is **AT RISK** *and* any cost-to-migrate question is answered *“yes”*
+
+### **Low Risk**
+- Asset is **PHASE-OUT** *and* migration cost impact is minimal
+
+This ensures assets are no longer incorrectly classified as low-risk due to underestimated X or Y values.
+
+---
+
+
+
+
+
 
 Once the risk level is determined for each asset, proceed to [Phase 3](../CARAF%20Phases/Phase%203%3A%20Migration%20Recommendation.md).
