@@ -95,11 +95,5 @@ Risk is determined by combining the **Exposure classification** with **cost-to-m
 
 This ensures assets are no longer incorrectly classified as low-risk due to underestimated X or Y values.
 
----
-
-
-
-
-
 
 Once the risk level is determined for each asset, proceed to [Phase 3](../CARAF%20Phases/Phase%203%3A%20Migration%20Recommendation.md).
