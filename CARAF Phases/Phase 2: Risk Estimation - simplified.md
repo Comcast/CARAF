@@ -3,7 +3,7 @@
 This phase estimates the risk level of the asset, representing the value and importance of the asset to be secured with PQC algorithms. Here, we calculate the risk level by considering time, data retention, and cost.
 
 ## Time to exposure
-We use Mosca's theorem as a start and add data retention as an additional factor:
+We use Mosca's theorem as a start and add data retention as an additional factor. Further, we view data as part of the asset:
 - Lifespan of the asset is $X$ from [Phase 1](../CARAF%20Phases/Phase%201:%20Crypto%20Agility%20Measurement.md).
 - Time needed for migration is $Y$ from [Phase 1](../CARAF%20Phases/Phase%201:%20Crypto%20Agility%20Measurement.md).
 - Data retention is $D$.
