@@ -29,3 +29,6 @@ This version simplifies CARAF Phase 1 questions:
 
 1. All questions are now under one category.
 2. All questions have consistent scoring: "Yes" means +1.
+
+## CARAF 3.3
+This version adds data retention as a factor to determine the risk level in Phase 2.
