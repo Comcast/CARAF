@@ -5,7 +5,7 @@ This phase estimates the risk level of the asset, representing the value and imp
 We use Mosca's theorem as a start and add data retention as an additional factor. Further, we view data as part of the asset:
 - Lifespan of the asset is $X$ from [Phase 1](../CARAF%20Phases/Phase%201:%20Crypto%20Agility%20Measurement.md).
 - Time needed for migration is $Y$ from [Phase 1](../CARAF%20Phases/Phase%201:%20Crypto%20Agility%20Measurement.md).
-- Data retention is $D$.
+- Data retention period is $D$ from [Phase 1](../CARAF%20Phases/Phase%201:%20Crypto%20Agility%20Measurement.md).
 - Time before threat results in a compromise is $Z$. Per [NIST IR 8547](https://nvlpubs.nist.gov/nistpubs/ir/2024/NIST.IR.8547.ipd.pdf), there are two milestones that can serve as the $Z$ value:
   - *End of 2030*: Classical algorithms are deprecated after 2030.
   - *End of 2035*: Classical algorithms are disallowed after 2035.
