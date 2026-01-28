@@ -31,4 +31,4 @@ This version simplifies CARAF Phase 1 questions:
 2. All questions have consistent scoring: "Yes" means +1.
 
 ## CARAF 3.3
-This version adds data retention as a factor to determine the risk level in Phase 2.
+This version adds data retention as a factor to determine the risk level in Phase 2, as well as [CARAF calculator](Resources/CARAF%20Calculator%20v3.3.xlsm) updates with the question changes in [CARAF 3.2](CHANGES.md#caraf-32).
