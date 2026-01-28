@@ -5,7 +5,7 @@ This phase measures the crypto agility of the asset by asking the following bina
 - What is the lifespan of the asset (in years)? Value = $X$
 - What is the time needed to migrate the asset (in years)? Value = $Y$;
 $X$ and $Y$ will be used in [Phase 2](../CARAF%20Phases/Phase%202%3A%20Risk%20Estimation.md).
-- What is the lifespan of the data stored in the asset (in years)?
+- What is the data retention period in the asset (in years)?
 
 ## Crypto Agility Related
 - Is the asset owned by the first party? If yes, +1.
