@@ -12,9 +12,9 @@ The Crypto Agility Risk Assessment Framework (CARAF) helps organizations evaluat
 At the output of [Phase 3](CARAF%20Phases/Phase%203%3A%20Migration%20Recommendation.md), CARAF will add a migration recommendation for every asset in the list (see ② above). Based on the recommendation, actions differ depending on whether the asset is first-party or third-party (see ③ above).
 
 # Quickstart with CARAF Calculator
-We have created a [CARAF calculator](Resources/CARAF%20Calculator.xlsm) (you can download the raw file as an Excel sheet) that performs the risk assessment on each asset in an asset inventory. Please review [CARAF phases](CARAF%20Phases) before using the calculator. Then, watch the video below to get started.
+We have created a [CARAF calculator](Resources/CARAF%20Calculator%20v3.3.xlsm) (you can download the raw file as an Excel sheet) that performs the risk assessment on each asset in an asset inventory. Please review [CARAF phases](CARAF%20Phases) before using the calculator. Then, watch the video below to get started.
 
-https://github.com/user-attachments/assets/4bf38dee-8ace-43a4-8df2-70798ca745d6
+https://github.com/user-attachments/assets/770f8f46-21d6-4c78-bff7-a2244a3b34a1
 
 # Performance Evaluation with PQBench
 CARAF has a performance evaluation tool called PQBench. Please click [here](Tools/PQBench) or check out the directory [Tools/PQBench](Tools/PQBench) to learn more.
