@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>SBOM Dependency Analyzer</title>
+
+  <style>
+    body{
+      font-family:"Segoe UI", Arial;
+      background:#f4f6f8;
+      padding:40px;
+      text-align:center;
+    }
+
+    input{
+      padding:14px;
+      width:60%;
+      border-radius:8px;
+      border:1px solid #ccc;
+    }
+
+    button{
+      padding:12px 20px;
+      background:#2563eb;
+      color:white;
+      border:none;
+      border-radius:6px;
+      cursor:pointer;
+    }
+
+    button:hover{ background:#1d4ed8; }
+
+    .section{
+      margin-top:30px;
+      background:white;
+      padding:30px;
+      border-radius:12px;
+      box-shadow:0 8px 25px rgba(0,0,0,0.08);
+      text-align:left;
+    }
+
+    table{
+      width:95%;
+      border-collapse:collapse;
+      margin-top:15px;
+    }
+
+    th{
+      background:#2563eb;
+      color:white;
+    }
+
+    th,td{
+      padding:10px;
+      border:1px solid #ddd;
+    }
+
+    .badge{
+      display:inline-block;
+      padding:4px 10px;
+      border-radius:999px;
+      font-size:12px;
+      font-weight:600;
+      margin-left:8px;
+    }
+
+    .green{background:#dcfce7;color:#166534;}
+    .red{background:#fee2e2;color:#991b1b;}
+    .orange{background:#fff7ed;color:#9a3412;}
+    .blue{background:#eff6ff;color:#1e40af;}
+    .gray{background:#f3f4f6;color:#374151;}
+
+    .bot-response{
+      background:#ffffff;
+      padding:20px;
+      border-radius:12px;
+      border-left:6px solid #2563eb;
+      line-height:1.6;
+    }
+
+    .ai-box{
+      background:#ffffff;
+      border-left:6px solid #2563eb;
+      padding:22px;
+      border-radius:12px;
+      line-height:1.7;
+      margin-top:10px;
+    }
+
+    .ai-box h3{
+      margin-top:18px;
+      color:#1e40af;
+    }
+
+    .ai-box ul{
+      margin-left:22px;
+    }
+
+    .ai-box li{
+      margin-bottom:6px;
+    }
+
+    .ai-box pre{
+      background:#111827;
+      color:#f9fafb;
+      padding:12px;
+      border-radius:8px;
+      overflow-x:auto;
+    }
+
+    .analysis-card{
+      margin-top:14px;
+      border:1px solid #dbeafe;
+      border-radius:12px;
+      background:#f8fbff;
+      overflow:hidden;
+    }
+
+    .analysis-head{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      padding:12px 16px;
+      background:#eff6ff;
+      border-bottom:1px solid #dbeafe;
+      font-weight:600;
+    }
+
+    .analysis-meta{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+      gap:10px;
+      padding:14px 16px;
+      background:#ffffff;
+    }
+
+    .meta-item{
+      border:1px solid #e5e7eb;
+      border-radius:10px;
+      padding:10px 12px;
+      background:#f9fafb;
+      font-size:13px;
+      line-height:1.45;
+    }
+
+    .meta-label{
+      font-weight:700;
+      color:#1f2937;
+      display:block;
+      margin-bottom:2px;
+    }
+
+    .muted{
+      color:#6b7280;
+      font-size:13px;
+      margin:8px 0;
+    }
+
+    summary{
+      cursor:pointer;
+      font-weight:600;
+      font-size:16px;
+    }
+
+    .download-actions{
+      margin-top:16px;
+      display:flex;
+      gap:10px;
+      justify-content:center;
+      flex-wrap:wrap;
+    }
+
+    .download-btn{
+      padding:10px 14px;
+      border:none;
+      border-radius:8px;
+      color:#fff;
+      font-weight:600;
+      cursor:pointer;
+    }
+
+    .download-btn.csv{ background:#0f766e; }
+    .download-btn.html{ background:#1d4ed8; }
+  </style>
+</head>
+
+<body>
+
+<h2>🔗 SBOM Dependency Analyzer</h2>
+
+<input id="repo" placeholder="owner/repo (example: openssl/openssl)">
+<button onclick="analyze()">Analyze</button>
+
+<div class="download-actions" id="download-actions" style="display:none;">
+  <button class="download-btn csv" onclick="downloadDependency('csv')">⬇ Download CSV</button>
+  <button class="download-btn html" onclick="downloadDependency('html')">⬇ Download HTML</button>
+</div>
+
+<div id="graph"></div>
+
+<script>
+let exportPayload = {
+  dependencies: [],
+  crypto_dependencies: [],
+  maintenance: [],
+  dependency_migration_advice: ""
+};
+
+function detectStatusBadge(text){
+  if(/well[-\s]?maintained/i.test(text))
+    return "<span class='badge green'>WELL‑MAINTAINED</span>";
+  if(/at[-\s]?risk/i.test(text))
+    return "<span class='badge red'>AT‑RISK</span>";
+  if(/maintained/i.test(text))
+    return "<span class='badge orange'>MAINTAINED</span>";
+  return "<span class='badge gray'>UNKNOWN</span>";
+}
+
+function renderAI(text){
+  const formatted = formatAiMarkdown(text || "No AI analysis available");
+
+  return `
+    <div class="bot-response">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;">
+        <span style="font-weight:700;color:#1e3a8a;">🤖 AI Executive Assessment</span>
+        ${detectStatusBadge(text || "")}
+      </div>
+      <details open>
+        <summary>View detailed AI analysis</summary>
+        <div class="ai-box">${formatted}</div>
+      </details>
+    </div>
+  `;
+}
+
+function convertMarkdownTables(text){
+  const lines = text.split("\n");
+  const out = [];
+  let i = 0;
+  while(i < lines.length){
+    if(/^\s*\|.+\|/.test(lines[i])){
+      const tableLines = [];
+      while(i < lines.length && /^\s*\|/.test(lines[i])){
+        tableLines.push(lines[i]);
+        i++;
+      }
+      let html = "<table style='border-collapse:collapse;width:100%;margin:10px 0'>";
+      let inBody = false;
+      for(const tl of tableLines){
+        // separator row  |---|---|
+        if(/^\s*\|[\s\-|:]+\|?\s*$/.test(tl)){
+          if(!inBody){ html += "<tbody>"; inBody = true; }
+          continue;
+        }
+        const cells = tl.split("|").slice(1,-1).map(c=>c.trim());
+        if(!inBody){
+          html += "<thead><tr>"
+            + cells.map(c=>`<th style='background:#2563eb;color:#fff;padding:8px 10px;border:1px solid #93c5fd;text-align:left'>${c}</th>`).join("")
+            + "</tr></thead>";
+        } else {
+          html += "<tr>"
+            + cells.map(c=>`<td style='padding:8px 10px;border:1px solid #ddd'>${c}</td>`).join("")
+            + "</tr>";
+        }
+      }
+      if(inBody) html += "</tbody>";
+      html += "</table>";
+      out.push(html);
+    } else {
+      out.push(lines[i]);
+      i++;
+    }
+  }
+  return out.join("\n");
+}
+
+function formatAiMarkdown(rawText){
+  let t = String(rawText || "");
+
+  // convert markdown tables before line-break expansion
+  t = convertMarkdownTables(t);
+
+  t = t
+    .replace(/^#### (.*$)/gim,"<h3>$1</h3>")
+    .replace(/^### (.*$)/gim,"<h3>$1</h3>")
+    .replace(/\*\*(.*?)\*\*/g,"<strong>$1</strong>")
+    .replace(/^- (.*)/gim,"<li>$1</li>")
+    .replace(/(<li>.*<\/li>)/gis,"<ul>$1</ul>")
+    .replace(/```([\s\S]*?)```/g,"<pre>$1</pre>")
+    .replace(/\n{2,}/g,"<br><br>")
+    .replace(/\n/g,"<br>");
+
+  return t;
+}
+
+function yesNoBadge(value){
+  return value
+    ? "<span class='badge green'>YES</span>"
+    : "<span class='badge red'>NO</span>";
+}
+
+function safe(v){
+  if(v === null || v === undefined || v === "") return "N/A";
+  return v;
+}
+
+function escHtml(s){
+  return String(s)
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;");
+}
+
+function displayName(raw){
+  if(!raw) return "";
+  let n = String(raw).toLowerCase();
+  // strip PURL prefix  pkg:pypi/foo@1.0  or  pkg:npm/foo@1.0
+  if(n.startsWith("pkg:")) n = n.split("/").slice(1).join("/");
+  // strip repo hosts
+  ["github.com/","gitlab.com/","bitbucket.org/"].forEach(h=>{
+    if(n.includes(h)) n = n.split(h).pop();
+  });
+  // strip version suffix @1.2.3
+  n = n.split("@")[0];
+  // keep the last path segment only
+  n = n.split("/").pop();
+  // strip extras / specifiers
+  n = n.split(/[><=!~[\s;]/)[0];
+  return n.trim() || String(raw);
+}
+
+function renderMeta(meta){
+  return `
+    <div class="analysis-meta">
+      <div class="meta-item">
+        <span class="meta-label">📅 Last Push</span>
+        ${safe(meta.last_push)}
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">🏷️ Latest Release</span>
+        ${safe(meta.latest_release)}
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">👥 Contributors</span>
+        ${safe(meta.contributors)}
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">🔁 CI</span>
+        ${yesNoBadge(!!meta.ci)}
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">🛡️ Security Policy</span>
+        ${yesNoBadge(!!meta.security)}
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">⚛️ PQC Category</span>
+        <span class="badge blue">${safe(meta.category)}</span>
+      </div>
+    </div>
+  `;
+}
+
+async function analyze(){
+  let repo=document.getElementById("repo").value.trim();
+  if(!repo){ alert("Enter repository"); return; }
+
+  exportPayload = {
+    dependencies: [],
+    crypto_dependencies: [],
+    maintenance: [],
+    dependency_migration_advice: ""
+  };
+
+  document.getElementById("download-actions").style.display = "none";
+
+  document.getElementById("graph").innerHTML =
+    "<div class='section'><h3>Analyzing SBOM…</h3></div>";
+
+  let res = await fetch("/dependency",{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({repo})
+  });
+
+  let data = await res.json();
+  exportPayload.dependencies = data.dependencies || [];
+
+  /* ------------------------------
+     STEP 1 — Full SBOM Dependencies
+     ------------------------------ */
+  let html =
+    "<div class='section'><h3>📦 Step 1: Extracted Dependencies (SBOM)</h3>";
+
+  html += "<table><tr><th>#</th><th>Dependency</th><th>Version / Source</th></tr>";
+
+  data.dependencies.forEach((d,i)=>{
+    html += `<tr><td>${i+1}</td><td title="${escHtml(d.name)}">${escHtml(displayName(d.name))}</td><td>${escHtml(d.version||"unknown")}</td></tr>`;
+  });
+
+  html += "</table></div>";
+
+  /* ------------------------------
+     STEP 2 — Crypto Dependencies from Backend
+     ------------------------------ */
+  let crypto = data.crypto_dependencies || [];
+  exportPayload.crypto_dependencies = crypto;
+  exportPayload.dependency_migration_advice = data.dependency_migration_advice || "";
+
+  html += "<div class='section'><h3>🔐 Step 2: Cryptography Dependencies</h3>";
+
+  if(crypto.length === 0){
+    html += "<span class='badge gray'>No cryptographic dependencies detected</span></div>";
+  } else {
+    html += "<table><tr><th>#</th><th>Name</th><th>Normalized</th><th>Type</th><th>GitHub Repo</th></tr>";
+
+    crypto.forEach((c,i)=>{
+      html += `<tr>
+        <td>${i+1}</td>
+        <td title="${escHtml(c.name)}">${escHtml(displayName(c.name))}</td>
+        <td>${escHtml(c.normalized)}</td>
+        <td>${escHtml(c.type)}</td>
+        <td>${c.github_repo ? escHtml(c.github_repo) : "<i>No mapping</i>"}</td>
+      </tr>`;
+    });
+
+    html += "</table></div>";
+  }
+
+  /* ------------------------------
+     STEP 3 — Maintenance Check for Crypto Repos
+     ------------------------------ */
+  let aiSection =
+    "<div class='section'><h3>🏗️ Step 3: Crypto Dependency Maintenance Analysis</h3>";
+
+  if(crypto.length === 0){
+    aiSection += "<p class='muted'>ℹ️ No mapped crypto repositories available for maintenance analysis.</p>";
+  }
+
+  for(let c of crypto){
+    if(!c.github_repo){ 
+      aiSection += `<p class='muted'>⚪ ${c.name} → no mapped GitHub repo</p>`;
+      continue;
+    }
+
+    try{
+      let r = await fetch("/repo_crypto",{
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({repo: c.github_repo})
+      });
+
+      let meta = await r.json();
+      exportPayload.maintenance.push(meta);
+
+      aiSection += `
+        <div class="analysis-card">
+          <div class="analysis-head">
+            <span>🔍 ${c.github_repo}</span>
+            <span class="badge orange">${safe(meta.rating).toUpperCase()}</span>
+          </div>
+          ${renderMeta(meta)}
+          <div style="padding:0 16px 16px 16px;">
+            ${renderAI(meta.ai_assessment || "No AI analysis available")}
+          </div>
+        </div>
+      `;
+    }catch(err){
+      aiSection += `<p class='muted'>❌ Error analyzing ${c.github_repo}</p>`;
+    }
+  }
+
+  aiSection += "</div>";
+
+  let migrationSection =
+    "<div class='section'><h3>🚀 Step 4: Dependency PQC Migration Guidance</h3>";
+
+  migrationSection += renderAI(data.dependency_migration_advice || "No migration advice available.");
+  migrationSection += "</div>";
+
+  document.getElementById("graph").innerHTML = html + aiSection + migrationSection;
+  document.getElementById("download-actions").style.display = "flex";
+}
+
+async function downloadDependency(format){
+  if(!exportPayload.dependencies.length && !exportPayload.crypto_dependencies.length && !exportPayload.maintenance.length && !exportPayload.dependency_migration_advice){
+    alert("Run an analysis first.");
+    return;
+  }
+
+  const res = await fetch(`/dependency/export/${format}`, {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify(exportPayload)
+  });
+
+  if(!res.ok){
+    alert("Download failed.");
+    return;
+  }
+
+  const blob = await res.blob();
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `dependency_analysis.${format}`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+</script>
+
+</body>
+</html>
