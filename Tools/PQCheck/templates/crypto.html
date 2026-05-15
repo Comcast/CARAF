@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Crypto Health Scan</title>
+
+<style>
+body{
+  font-family: "Segoe UI", Arial;
+  background:#f4f6f8;
+  padding:40px;
+}
+
+.container{
+  max-width:1100px;
+  margin:auto;
+}
+
+.card{
+  background:white;
+  padding:30px;
+  border-radius:12px;
+  box-shadow:0 8px 25px rgba(0,0,0,0.08);
+  margin-bottom:25px;
+}
+
+h2,h3{
+  margin-top:0;
+}
+
+.badge{
+  display:inline-block;
+  padding:6px 12px;
+  border-radius:999px;
+  color:white;
+  font-size:13px;
+  font-weight:600;
+}
+
+.green{background:#22c55e;}
+.orange{background:#f59e0b;}
+.red{background:#ef4444;}
+.blue{background:#3b82f6;}
+.gray{background:#6b7280;}
+.yellow{background:#eab308;}
+
+.form input{
+  padding:14px;
+  width:70%;
+  font-size:16px;
+  border-radius:8px;
+  border:1px solid #ccc;
+}
+
+.form button{
+  padding:14px 20px;
+  background:#2563eb;
+  color:white;
+  border:none;
+  border-radius:8px;
+  cursor:pointer;
+}
+
+/* ✅ AI OUTPUT STYLING */
+.ai-box{
+  background:#ffffff;
+  border-left:6px solid #2563eb;
+  padding:22px;
+  border-radius:12px;
+  line-height:1.7;
+}
+
+.ai-box h3{
+  margin-top:18px;
+  color:#1e40af;
+}
+
+.ai-box ul{
+  margin-left:22px;
+}
+
+.ai-box li{
+  margin-bottom:6px;
+}
+
+.ai-box pre{
+  background:#111827;
+  color:#f9fafb;
+  padding:12px;
+  border-radius:8px;
+  overflow-x:auto;
+}
+
+details summary{
+  cursor:pointer;
+  font-weight:600;
+  font-size:16px;
+  margin-bottom:10px;
+}
+
+.criteria{
+  background:#fff7ed;
+  border-left:6px solid #fb923c;
+  padding:15px;
+  border-radius:10px;
+}
+
+.download-actions{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-top:12px;
+}
+
+.download-btn{
+  padding:10px 14px;
+  border:none;
+  border-radius:8px;
+  color:#fff;
+  cursor:pointer;
+  font-weight:600;
+}
+
+.download-btn.csv{ background:#0f766e; }
+.download-btn.html{ background:#1d4ed8; }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <h2>🔐 Crypto & PQC Repository Health Scan</h2>
+
+  <div class="card form">
+    <form method="POST">
+      <input type="text" name="repo" placeholder="owner/repo (e.g., openssl/openssl)" required>
+      <button type="submit">Analyze</button>
+    </form>
+  </div>
+
+  {% if result %}
+    {% if result.error %}
+      <div class="card">
+        <b style="color:red">Error:</b> {{ result.error }}
+      </div>
+    {% else %}
+
+      <!-- ✅ SUMMARY CARD -->
+      <div class="card">
+        <h3>{{ result.repo }}</h3>
+
+        <p>
+          <b>Maintenance Status:</b>
+          {% if result.rating == "well-maintained" %}
+            <span class="badge green">✅ WELL‑MAINTAINED</span>
+          {% elif result.rating == "maintained" %}
+            <span class="badge orange">⚠ MAINTAINED</span>
+          {% else %}
+            <span class="badge red">🚨 AT‑RISK</span>
+          {% endif %}
+        </p>
+
+        <p>
+          <b>PQC Readiness:</b>
+          {% if "Native" in result.category %}
+            <span class="badge green">🟢 PRODUCTION‑READY</span>
+          {% elif "Integration" in result.category %}
+            <span class="badge blue">🔵 INTEGRATION‑READY</span>
+          {% elif "Hybrid" in result.category %}
+            <span class="badge orange">🟠 HYBRID</span>
+          {% elif "Experimental" in result.category %}
+            <span class="badge yellow">🟡 EXPERIMENTAL</span>
+          {% else %}
+            <span class="badge gray">⚫ NOT READY</span>
+          {% endif %}
+        </p>
+      </div>
+
+      <!-- ✅ DETAILS -->
+      <div class="card">
+        <p><b>Last Push:</b> {{ result.last_push }}</p>
+        <p><small>source: {{ result.metric_sources.last_push.source }} ({{ result.metric_sources.last_push.confidence }})</small></p>
+        <p><b>Latest Release:</b> {{ result.latest_release }}</p>
+        <p><small>source: {{ result.metric_sources.latest_release.source }} ({{ result.metric_sources.latest_release.confidence }})</small></p>
+        <p><b>Contributors:</b> {{ result.contributors }}</p>
+        <p><small>source: {{ result.metric_sources.contributors.source }} ({{ result.metric_sources.contributors.confidence }})</small></p>
+        <p><b>CI:</b> {{ result.ci }}</p>
+        <p><small>source: {{ result.metric_sources.ci.source }} ({{ result.metric_sources.ci.confidence }})</small></p>
+        <p><b>Security Policy:</b> {{ result.security }}</p>
+        <p><small>source: {{ result.metric_sources.security.source }} ({{ result.metric_sources.security.confidence }})</small></p>
+        <p><b>Detected PQC:</b> {{ result.detected }}</p>
+      </div>
+
+      <!-- ✅ AI OUTPUT (Readable + Collapsible + Markdown) -->
+      <div class="card">
+        <h3>🧠 AI Executive Assessment</h3>
+
+        <details open>
+          <summary>View detailed AI analysis</summary>
+
+          <div class="ai-box" id="ai-output">
+            {{ result.ai_assessment }}
+          </div>
+        </details>
+      </div>
+
+      <!-- ✅ CRITERIA -->
+      <div class="card criteria">
+        <h3>📋 Evaluation Criteria</h3>
+        <ul>
+          <li>Days since commit: {{ result.ai_evaluation_input.maintenance_criteria.recent_commit_days }}</li>
+          <li>Days since release: {{ result.ai_evaluation_input.maintenance_criteria.recent_release_days }}</li>
+          <li>Contributors: {{ result.ai_evaluation_input.maintenance_criteria.contributors }}</li>
+          <li>CI enabled: {{ result.ai_evaluation_input.maintenance_criteria.has_ci }}</li>
+          <li>Security policy: {{ result.ai_evaluation_input.maintenance_criteria.has_security_policy }}</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <a href="/ai">🤖 Open AI Repo Assistant →</a>
+        <div class="download-actions">
+          <button class="download-btn csv" onclick="downloadCrypto('csv')">⬇ Download CSV</button>
+          <button class="download-btn html" onclick="downloadCrypto('html')">⬇ Download HTML</button>
+        </div>
+      </div>
+
+    {% endif %}
+  {% endif %}
+
+</div>
+
+<!-- ✅ MARKDOWN → HTML SCRIPT -->
+<script>
+const cryptoResult = {{ (result or {})|tojson }};
+
+async function downloadCrypto(format){
+  if(!cryptoResult || !cryptoResult.repo){
+    alert("Run an analysis first.");
+    return;
+  }
+
+  const res = await fetch(`/crypto/export/${format}` ,{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({result: cryptoResult})
+  });
+
+  if(!res.ok){
+    alert("Download failed.");
+    return;
+  }
+
+  const blob = await res.blob();
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `crypto_analysis.${format}`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
+(function(){
+  const el = document.getElementById("ai-output");
+  if(!el) return;
+
+  let t = el.innerHTML;
+
+  t = t
+    .replace(/^#### (.*$)/gim,"<h3>$1</h3>")
+    .replace(/^### (.*$)/gim,"<h3>$1</h3>")
+    .replace(/\*\*(.*?)\*\*/g,"<strong>$1</strong>")
+    .replace(/^- (.*)/gim,"<li>$1</li>")
+    .replace(/(<li>.*<\/li>)/gis,"<ul>$1</ul>")
+    .replace(/```([\s\S]*?)```/g,"<pre>$1</pre>")
+    .replace(/\n{2,}/g,"<br><br>")
+    .replace(/\n/g,"<br>");
+
+  el.innerHTML = t;
+})();
+</script>
+
+</body>
+</html>
