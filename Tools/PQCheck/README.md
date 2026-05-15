@@ -2,8 +2,8 @@
 
 A Flask web app that analyzes GitHub repositories for:
 
-- dependency maintenance risk indicators
-- finding crypto dependency
+- Dependency maintenance risk indicators
+- Finding crypto dependency
 - Post-Quantum Cryptography (PQC) signals
 - AI-assisted migration guidance
 
