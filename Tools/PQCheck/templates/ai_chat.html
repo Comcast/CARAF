@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AI Repo Chat</title>
+  <style>
+    body {
+      font-family: "Segoe UI", Arial, sans-serif;
+      background: #f4f6f8;
+      margin: 0;
+      padding: 32px 16px;
+    }
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    .card {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+      padding: 22px;
+      margin-bottom: 18px;
+    }
+    h2 { margin-top: 0; }
+    input, textarea, button {
+      width: 100%;
+      box-sizing: border-box;
+      border-radius: 8px;
+      border: 1px solid #d1d5db;
+      font-size: 15px;
+      padding: 10px 12px;
+      margin-top: 8px;
+    }
+    textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
+    button {
+      background: #2563eb;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      margin-top: 12px;
+    }
+    button:disabled {
+      opacity: 0.6;
+      cursor: default;
+    }
+    .reply {
+      white-space: pre-wrap;
+      line-height: 1.6;
+      background: #f8fafc;
+      border-radius: 10px;
+      padding: 14px;
+      border-left: 5px solid #2563eb;
+      min-height: 60px;
+    }
+    .muted {
+      color: #6b7280;
+      font-size: 13px;
+    }
+    a {
+      color: #1d4ed8;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <h2>AI Repository Chat</h2>
+      <p class="muted">Ask repository-specific questions. Use owner/repo format.</p>
+      <label for="repo">Repository</label>
+      <input id="repo" placeholder="e.g. openssl/openssl" />
+
+      <label for="message">Question</label>
+      <textarea id="message" placeholder="What are the crypto risks in this repo?"></textarea>
+
+      <button id="sendBtn" onclick="askRepoAI()">Ask AI</button>
+      <p class="muted"><a href="/">Back to Home Page</a></p>
+    </div>
+
+    <div class="card">
+      <h3>Response</h3>
+      <div id="reply" class="reply">No response yet.</div>
+    </div>
+  </div>
+
+  <script>
+    async function askRepoAI() {
+      const repo = document.getElementById('repo').value.trim();
+      const message = document.getElementById('message').value.trim();
+      const replyEl = document.getElementById('reply');
+      const btn = document.getElementById('sendBtn');
+
+      if (!repo || !message) {
+        replyEl.textContent = 'Please provide both repository and question.';
+        return;
+      }
+
+      btn.disabled = true;
+      replyEl.textContent = 'Thinking...';
+
+      try {
+        const res = await fetch('/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ repo, message })
+        });
+
+        const data = await res.json();
+        if (!res.ok) {
+          replyEl.textContent = data.reply || 'Request failed.';
+          return;
+        }
+
+        replyEl.textContent = data.reply || 'No response returned.';
+      } catch (e) {
+        replyEl.textContent = 'Network error while calling /chat.';
+      } finally {
+        btn.disabled = false;
+      }
+    }
+  </script>
+</body>
+</html>
