@@ -233,52 +233,9 @@ function renderAI(text){
   `;
 }
 
-function convertMarkdownTables(text){
-  const lines = text.split("\n");
-  const out = [];
-  let i = 0;
-  while(i < lines.length){
-    if(/^\s*\|.+\|/.test(lines[i])){
-      const tableLines = [];
-      while(i < lines.length && /^\s*\|/.test(lines[i])){
-        tableLines.push(lines[i]);
-        i++;
-      }
-      let html = "<table style='border-collapse:collapse;width:100%;margin:10px 0'>";
-      let inBody = false;
-      for(const tl of tableLines){
-        // separator row  |---|---|
-        if(/^\s*\|[\s\-|:]+\|?\s*$/.test(tl)){
-          if(!inBody){ html += "<tbody>"; inBody = true; }
-          continue;
-        }
-        const cells = tl.split("|").slice(1,-1).map(c=>c.trim());
-        if(!inBody){
-          html += "<thead><tr>"
-            + cells.map(c=>`<th style='background:#2563eb;color:#fff;padding:8px 10px;border:1px solid #93c5fd;text-align:left'>${c}</th>`).join("")
-            + "</tr></thead>";
-        } else {
-          html += "<tr>"
-            + cells.map(c=>`<td style='padding:8px 10px;border:1px solid #ddd'>${c}</td>`).join("")
-            + "</tr>";
-        }
-      }
-      if(inBody) html += "</tbody>";
-      html += "</table>";
-      out.push(html);
-    } else {
-      out.push(lines[i]);
-      i++;
-    }
-  }
-  return out.join("\n");
-}
-
 function formatAiMarkdown(rawText){
   let t = String(rawText || "");
-
-  // convert markdown tables before line-break expansion
-  t = convertMarkdownTables(t);
+  t = escapeHtml(t);
 
   t = t
     .replace(/^#### (.*$)/gim,"<h3>$1</h3>")
@@ -301,33 +258,18 @@ function yesNoBadge(value){
 
 function safe(v){
   if(v === null || v === undefined || v === "") return "N/A";
-  return v;
+  return escapeHtml(v);
 }
 
-function escHtml(s){
-  return String(s)
-    .replace(/&/g,"&amp;")
-    .replace(/</g,"&lt;")
-    .replace(/>/g,"&gt;")
-    .replace(/"/g,"&quot;");
-}
-
-function displayName(raw){
-  if(!raw) return "";
-  let n = String(raw).toLowerCase();
-  // strip PURL prefix  pkg:pypi/foo@1.0  or  pkg:npm/foo@1.0
-  if(n.startsWith("pkg:")) n = n.split("/").slice(1).join("/");
-  // strip repo hosts
-  ["github.com/","gitlab.com/","bitbucket.org/"].forEach(h=>{
-    if(n.includes(h)) n = n.split(h).pop();
-  });
-  // strip version suffix @1.2.3
-  n = n.split("@")[0];
-  // keep the last path segment only
-  n = n.split("/").pop();
-  // strip extras / specifiers
-  n = n.split(/[><=!~[\s;]/)[0];
-  return n.trim() || String(raw);
+function escapeHtml(text){
+  const map = {
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#039;"
+  };
+  return String(text).replace(/[&<>"']/g, m => map[m]);
 }
 
 function renderMeta(meta){
@@ -392,10 +334,10 @@ async function analyze(){
   let html =
     "<div class='section'><h3>📦 Step 1: Extracted Dependencies (SBOM)</h3>";
 
-  html += "<table><tr><th>#</th><th>Dependency</th><th>Version / Source</th></tr>";
+  html += "<table><tr><th>Dependency</th><th>Source</th></tr>";
 
-  data.dependencies.forEach((d,i)=>{
-    html += `<tr><td>${i+1}</td><td title="${escHtml(d.name)}">${escHtml(displayName(d.name))}</td><td>${escHtml(d.version||"unknown")}</td></tr>`;
+  data.dependencies.forEach(d=>{
+    html += `<tr><td>${d.name}</td><td>${d.version||"unknown"}</td></tr>`;
   });
 
   html += "</table></div>";
@@ -412,15 +354,14 @@ async function analyze(){
   if(crypto.length === 0){
     html += "<span class='badge gray'>No cryptographic dependencies detected</span></div>";
   } else {
-    html += "<table><tr><th>#</th><th>Name</th><th>Normalized</th><th>Type</th><th>GitHub Repo</th></tr>";
+    html += "<table><tr><th>Name</th><th>Normalized</th><th>Type</th><th>GitHub Repo</th></tr>";
 
-    crypto.forEach((c,i)=>{
+    crypto.forEach(c=>{
       html += `<tr>
-        <td>${i+1}</td>
-        <td title="${escHtml(c.name)}">${escHtml(displayName(c.name))}</td>
-        <td>${escHtml(c.normalized)}</td>
-        <td>${escHtml(c.type)}</td>
-        <td>${c.github_repo ? escHtml(c.github_repo) : "<i>No mapping</i>"}</td>
+        <td>${escapeHtml(c.name)}</td>
+        <td>${escapeHtml(c.normalized)}</td>
+        <td>${escapeHtml(c.type)}</td>
+        <td>${c.github_repo ? escapeHtml(c.github_repo) : "<i>No mapping</i>"}</td>
       </tr>`;
     });
 
@@ -439,7 +380,7 @@ async function analyze(){
 
   for(let c of crypto){
     if(!c.github_repo){ 
-      aiSection += `<p class='muted'>⚪ ${c.name} → no mapped GitHub repo</p>`;
+      aiSection += `<p class='muted'>⚪ ${escapeHtml(c.name)} → no mapped GitHub repo</p>`;
       continue;
     }
 
@@ -456,7 +397,7 @@ async function analyze(){
       aiSection += `
         <div class="analysis-card">
           <div class="analysis-head">
-            <span>🔍 ${c.github_repo}</span>
+            <span>🔍 ${escapeHtml(c.github_repo)}</span>
             <span class="badge orange">${safe(meta.rating).toUpperCase()}</span>
           </div>
           ${renderMeta(meta)}
@@ -466,7 +407,7 @@ async function analyze(){
         </div>
       `;
     }catch(err){
-      aiSection += `<p class='muted'>❌ Error analyzing ${c.github_repo}</p>`;
+      aiSection += `<p class='muted'>❌ Error analyzing ${escapeHtml(c.github_repo)}</p>`;
     }
   }
 
@@ -478,7 +419,11 @@ async function analyze(){
   migrationSection += renderAI(data.dependency_migration_advice || "No migration advice available.");
   migrationSection += "</div>";
 
-  document.getElementById("graph").innerHTML = html + aiSection + migrationSection;
+  const graphElement = document.getElementById("graph");
+  graphElement.textContent = "";
+  const tempDiv = document.createElement("div");
+  tempDiv.innerHTML = escapeHtml(html + aiSection + migrationSection);
+  graphElement.appendChild(tempDiv);
   document.getElementById("download-actions").style.display = "flex";
 }
 
@@ -500,13 +445,19 @@ async function downloadDependency(format){
   }
 
   const blob = await res.blob();
+  if(!blob || !blob.type) {
+    alert("Invalid response received.");
+    return;
+  }
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
-  a.download = `dependency_analysis.${format}`;
-  document.body.appendChild(a);
+  const sanitizedFormat = String(format).replace(/[^a-z0-9]/gi, '');
+  a.download = `dependency_analysis.${sanitizedFormat}`;
+  a.style.display = "none";
+  const container = document.createElement("div");
+  container.appendChild(a);
   a.click();
-  a.remove();
   URL.revokeObjectURL(url);
 }
 </script>
