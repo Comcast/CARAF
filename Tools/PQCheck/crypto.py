@@ -9,6 +9,7 @@ import json
 import csv
 import io
 from html import escape
+from urllib.parse import urlparse
 
 from dependency import get_dependency_graph, analyze_dependency_crypto
 
@@ -39,10 +40,10 @@ subscription_key = os.getenv("<your_subscription_key_here>")
 
 client = None
 if subscription_key:
-    client = <subcription_function>(
+    client = yoursubscription(
         azure_endpoint=endpoint,
         api_key=subscription_key,
-        api_version="<your_api_version_here>"
+        api_version="<your_API_version>"
     )
 
 
@@ -80,6 +81,12 @@ PQC_KEYWORDS = {
 
 def gh_get(url):
     try:
+        # Validate URL to prevent SSRF
+        parsed = urlparse(url)
+        if parsed.netloc != "api.github.com":
+            print("Invalid URL: not from api.github.com")
+            return None
+        
         r = requests.get(url, headers=HEADERS, timeout=20)
 
         if r.status_code != 200:
@@ -382,6 +389,14 @@ def resolve_latest_release(owner, repo):
 
 
 def resolve_contributors(owner, repo):
+    # Sanitize inputs to prevent SSRF
+    if not isinstance(owner, str) or not isinstance(repo, str):
+        return None
+    owner = owner.strip()
+    repo = repo.strip()
+    if not re.match(r'^[a-zA-Z0-9\-_.]+$', owner) or not re.match(r'^[a-zA-Z0-9\-_.]+$', repo):
+        return None
+    
     try:
         r = requests.get(
             f"{API}/repos/{owner}/{repo}/contributors",
@@ -429,6 +444,14 @@ def resolve_contributors(owner, repo):
 
 
 def resolve_security_policy(owner, repo, info):
+    # Validate owner and repo to prevent SSRF
+    if not owner or not repo or not re.match(r'^[a-zA-Z0-9_-]+$', owner) or not re.match(r'^[a-zA-Z0-9_.-]+$', repo):
+        return {
+            "value": False,
+            "source": "invalid_input",
+            "confidence": "high"
+        }
+    
     # common file locations and naming variants
     paths = [
         "SECURITY.md", "SECURITY", "security.md", "security",
@@ -481,6 +504,14 @@ def resolve_security_policy(owner, repo, info):
 
 
 def resolve_ci(owner, repo, readme):
+    # Validate owner and repo to prevent SSRF
+    if not re.match(r'^[a-zA-Z0-9._-]+$', owner) or not re.match(r'^[a-zA-Z0-9._-]+$', repo):
+        return {
+            "value": False,
+            "source": "invalid_repo_format",
+            "confidence": "high"
+        }
+    
     # 1) GitHub Actions workflows directory
     try:
         r = requests.get(
