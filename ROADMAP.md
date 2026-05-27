@@ -9,12 +9,13 @@ While a feature may not be listed here, it doesn't imply automatic refusal of a 
 
 ## Feature Classification
 
-### Content Changes
+### Main Content Changes
 | Content                          | Description                                      | Status      | Developer (GitHub ID)        |
 |----------------------------------|--------------------------------------------------|-------------|------------------------------|
-| First release | First release of CARAF as a risk assessment framework     | ✅Done   | [rtrimana](https://github.com/rtrimana) |
-| Phase simplification & CARAF calculator | Simplification of CARAF phases from 5 to 3 phases along with CARAF calculator      | ✅Done   | [rtrimana](https://github.com/rtrimana) |
-| Vendor Risk Assessment (VRA) questionnaire | Release of VRA questionnaire for PQC      | 🚧ToDo   | TBD |
+| First release | First release of CARAF as a risk assessment framework     | ✅Done   | [![Rahmadi Trimananda](https://img.shields.io/badge/GitHub-rtrimana-blue?logo=github)](https://github.com/rtrimana) |
+| Phase simplification & CARAF calculator | Simplification of CARAF phases from 5 to 3 phases along with CARAF calculator      | ✅Done   | [![Rahmadi Trimananda](https://img.shields.io/badge/GitHub-rtrimana-blue?logo=github)](https://github.com/rtrimana) |
+| PQBench benchmark release | Release of PQBench as PQC benchmarking framework      | ✅Done   | [![Golam Kayas](https://img.shields.io/badge/GitHub-golamkayas-blue?logo=github)](https://github.com/gkayas) |
+| PQC-Aware Third Party Risk Assessment | Release of PQC-aware third party risk assessment framework for PQC      | 🚧ToDo   | [![Rahmadi Trimananda](https://img.shields.io/badge/GitHub-rtrimana-blue?logo=github)](https://github.com/rtrimana) |
 
 ---
 
