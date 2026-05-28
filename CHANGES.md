@@ -8,6 +8,8 @@ This file gives an overview of the changes in each version of CARAF.
 - [CARAF 3.0](#caraf-30)
 - [CARAF 3.1](#caraf-31)
 - [CARAF 3.2](#caraf-32)
+- [CARAF 3.3](#caraf-33)
+- [CARAF 4.0](#caraf-40)
 
 ## CARAF 1.0
 This release includes the 5 phases of CARAF with knowledge base that includes articles related to PQC migration.
@@ -32,3 +34,6 @@ This version simplifies CARAF Phase 1 questions:
 
 ## CARAF 3.3
 This version adds data retention as a factor to determine the risk level in Phase 2, as well as [CARAF calculator](Resources/CARAF%20Calculator%20v3.3.xlsm) updates with the question changes in [CARAF 3.2](CHANGES.md#caraf-32).
+
+## CARAF 4.0
+This version includes the addition of [xIPHER](./Tools/xIPHER) into CARAF which can be used to find encryption information for certificates in code.

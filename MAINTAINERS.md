@@ -11,8 +11,9 @@ Comcast maintainers are responsible for overseeing the development and maintenan
 | Rahmadi Trimananda      | [![Rahmadi Trimananda](https://img.shields.io/badge/GitHub-rtrimana-blue?logo=github)](https://github.com/rtrimana) |
 | Bahman Rashidi    | [![Bahman Rashidi](https://img.shields.io/badge/GitHub-bahmanrashidi-blue?logo=github)](https://github.com/bahmanrashidi) |
 | Vaibhav Garg      | [![Vaibhav Garg](https://img.shields.io/badge/GitHub-0spider-blue?logo=github)](https://github.com/0spider) |
-| Golam Kayas       | [![Golam Kayas](https://img.shields.io/badge/GitHub-golamkayas-blue?logo=github)](https://github.com/gkayas) |
+| Golam Kayas       | [![Golam Kayas](https://img.shields.io/badge/GitHub-gkayas-blue?logo=github)](https://github.com/gkayas) |
 | Jansi Rani        | [![Jansi Rani](https://img.shields.io/badge/GitHub-jansiraj-blue?logo=github)](https://github.com/jansiraj) |
+| Jayati Dev        | [![Jayati Dev](https://img.shields.io/badge/GitHub-devjayati-blue?logo=github)](https://github.com/devjayati) |
 
 ## External Maintainers
 
