@@ -1,4 +1,4 @@
-# Xipher CARAF Certificate Scanner
+# xIPHER Certificate Scanner
 
 **Cryptographic Discovery and Analysis of Certificates in GitHub Code**
 
