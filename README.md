@@ -2,7 +2,7 @@
 
 With the rise of quantum computing, [classical cryptographic algorithms like RSA are no longer adequate to protect our data](https://www.nist.gov/news-events/news/2023/08/nist-standardize-encryption-algorithms-can-resist-attack-quantum-computers). Hence, organizations must update their computing assets that use any classical cryptographic algorithms to then use the [new post-quantum cryptography (PQC) algorithms](https://csrc.nist.gov/projects/post-quantum-cryptography), namely perform a migration on the assets' cryptographic algorithms from classical into PQC (i.e., PQC migration).
 
-![](Figures/CARAF%20Flow%20Diagram.png)
+![](Figures/CARAF%20Diagram.png)
 
 The Crypto Agility Risk Assessment Framework (CARAF) helps organizations evaluate the risks of their assets in the context of post-quantum cryptography (PQC) migration. We start from **Phase 0** that involves creating an inventory of all computing assets using cryptographic algorithms: this becomes the input to CARAF (see ① above). For each asset, CARAF assesses *crypto agility* – how easily the asset can transition to PQC, and *risk level* – the asset’s importance and need for PQC protection. CARAF includes three phases to guide migration decisions for each asset – click the links below to explore each phase:
 - **[Phase 1](CARAF%20Phases/Phase%201%3A%20Crypto%20Agility%20Measurement.md): Crypto Agility Measurement.** In this phase, CARAF uses binary and numerical questions to evaluate an asset’s crypto agility based on its cryptographic components.
