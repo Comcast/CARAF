@@ -96,8 +96,8 @@ A comprehensive certificate compliance scanner for GitHub organizations that che
 
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/your-org/xipher-caraf.git
-   cd xipher-caraf
+   git clone https://github.com/Comcast/CARAF.git
+   cd Tools/xIPHER/
    ```
 
 2. **Install dependencies**:
