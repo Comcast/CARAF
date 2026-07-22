@@ -50,7 +50,6 @@ from datetime import datetime, timezone
 from typing import Tuple, List, Dict, Optional
 
 # -------------------- Third-Party Libraries --------------------
-import requests
 import pandas as pd
 
 # -------------------- Cryptography --------------------
@@ -246,27 +245,23 @@ class CombinedCertScanner:
         """Extract text files from ZIP archive."""
         files = []
         seen = set()
-        virtual_root = os.path.abspath(os.sep)
+        safe_root = "/virtual_zip_root"
         
         for file_info in z.infolist():
             if file_info.is_dir():
                 continue
             
-            # Normalize separators, strip leading traversal, then enforce path bounds.
+            # Normalize and enforce a virtual path root so traversal entries are rejected.
             raw_name = file_info.filename.replace("\\", "/")
-            fname = os.path.normpath(raw_name).replace("\\", "/")
-            while fname.startswith("../"):
-                fname = fname[3:]
-            fname = fname.lstrip("/")
+            normalized = os.path.normpath(raw_name).replace("\\", "/")
+            resolved = os.path.normpath(os.path.join(safe_root, normalized)).replace("\\", "/")
 
+            if not resolved.startswith(safe_root + "/"):
+                continue
+
+            fname = resolved[len(safe_root) + 1:]
             if not fname or fname in (".", ".."):
                 continue
-
-            resolved = os.path.abspath(os.path.join(virtual_root, fname))
-            if os.path.commonpath([virtual_root, resolved]) != virtual_root:
-                continue
-
-            fname = os.path.relpath(resolved, virtual_root).replace("\\", "/")
 
             if fname in seen:
                 continue
@@ -601,6 +596,7 @@ Examples:
     parser.add_argument("--threads", type=int, default=1, help="Number of threads (default: 1)")
     parser.add_argument("--output-dir", default="./", help="Base output directory. Reports saved to <dir>/output/csv/ and <dir>/output/html/ (default: ./)")
     parser.add_argument("--interactive", "-i", action="store_true", help="Force interactive auth input")
+    parser.add_argument("--debug", action="store_true", help="Enable verbose traceback output on errors")
     
     # Check selection arguments
     parser.add_argument(
@@ -858,7 +854,8 @@ Examples:
         
     except Exception as e:
         print(f"[ERROR] Scanner failed: {e}")
-        traceback.print_exc()
+        if args.debug:
+            traceback.print_exc()
         return 1
 
 

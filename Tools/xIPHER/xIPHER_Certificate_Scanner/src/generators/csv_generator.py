@@ -172,14 +172,10 @@ class CSVGenerator:
         """
         df = df.copy()
         
-        # Columns that may contain untrusted data from scanned certificates
-        injection_risk_columns = ['Subject', 'Issuer', 'Non Compliant Reasons']
-        
-        for col in injection_risk_columns:
-            if col in df.columns:
-                df[col] = df[col].apply(
-                    lambda x: f"'{x}" if isinstance(x, str) and x and x[0] in '=+-@' else x
-                )
+        for col in df.columns:
+            df[col] = df[col].apply(
+                lambda x: f"'{x}" if isinstance(x, str) and x and x[0] in '=+-@\t\r' else x
+            )
         
         return df
     
