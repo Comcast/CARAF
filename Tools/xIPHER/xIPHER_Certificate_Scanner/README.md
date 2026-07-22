@@ -1,4 +1,4 @@
-# xIPHER Certificate Scanner
+# Xipher CARAF Certificate Scanner
 
 **Cryptographic Discovery and Analysis of Certificates in GitHub Code**
 
@@ -96,8 +96,8 @@ A comprehensive certificate compliance scanner for GitHub organizations that che
 
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/Comcast/CARAF.git
-   cd .\Tools\xIPHER\
+   git clone https://github.com/your-org/xipher-caraf.git
+   cd xipher-caraf
    ```
 
 2. **Install dependencies**:
@@ -115,10 +115,10 @@ A comprehensive certificate compliance scanner for GitHub organizations that che
 The scanner requires the following Python packages (defined in `requirements.txt`):
 
 ```
-requests==2.33.0
 pandas==2.2.2
-PyJWT==2.12.1
-cryptography==46.0.7
+PyJWT==2.13.0
+cryptography==48.0.1
+urllib3==2.7.0
 ```
 
 Dependencies are pinned to exact versions to prevent accidental installation of releases with breaking changes or security vulnerabilities.
@@ -139,9 +139,10 @@ The scanner requires GitHub API access. You can authenticate using either a **Pe
 3. Configure the token:
    - **Note**: Give it a descriptive name (e.g., "Xipher CARAF Scanner")
    - **Expiration**: Set appropriate expiration
-   - **Scopes**: Select the following:
-     - `repo` (Full control of private repositories)
-     - Or `public_repo` (for public repositories only)
+    - **Minimum required scopes**:
+       - `repo` (for private repositories)
+       - Or `public_repo` (for public repositories only)
+    - Use the least-privilege token possible. For fine-grained PATs, grant repository **Contents: Read-only** and **Metadata: Read-only**.
 
 4. Click **"Generate token"**
 
@@ -243,7 +244,7 @@ Secrets are **never** passed as CLI arguments to avoid exposure in shell history
 
 | Variable | Description |
 |----------|-------------|
-| `GITHUB_TOKEN` | **Required for PAT auth.** Personal Access Token with `repo` or `public_repo` scope. |
+| `GITHUB_TOKEN` | **Required for PAT auth.** Personal Access Token with minimum scope `repo` (private repos) or `public_repo` (public only). |
 | `XIPHER_APP_PRIVATE_KEY_FILE` | Path to the GitHub App private key `.pem` file (alternative to `--private-key-file`). |
 | `XIPHER_PRIVATE_KEY` | Inline PEM content of the GitHub App private key (for CI/CD secret injection without a file). |
 | `XIPHER_GITHUB_CERT_SHA256_PINS` | Comma-separated SHA-256 fingerprints to pin for `api.github.com` TLS verification. |
