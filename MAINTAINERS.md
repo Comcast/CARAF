@@ -23,6 +23,7 @@ External maintainers come from various organizations and institutions, contribut
 | Name               | GitHub Handle Card  | Affiliation                       |
 |--------------------|----------------------|-----------------------------------|
 | Sai Ganesh T.      | [![Sai Ganesh T.](https://img.shields.io/badge/GitHub-TSG46-blue?logo=github)](https://github.com/TSG46) | Comcast India Engineering Center |
+| Supriya Anand.     | [![Supriya Anand](https://img.shields.io/badge/GitHub-Supriya-blue?logo=github)](https://github.com/Su-p-riya) | Comcast India Engineering Center |
 
 ## Contact
 
