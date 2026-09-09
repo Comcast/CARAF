@@ -11,6 +11,7 @@ This file gives an overview of the changes in each version of CARAF.
 - [CARAF 3.3](#caraf-33)
 - [CARAF 4.0](#caraf-40)
 - [CARAF 5.0](#caraf-50)
+- [CARAF 6.0](#caraf-60)
 
 ## CARAF 1.0
 This release includes the 5 phases of CARAF with knowledge base that includes articles related to PQC migration.
@@ -41,3 +42,6 @@ This version includes the addition of [xIPHER](./Tools/xIPHER) into CARAF which 
 
 ## CARAF 5.0
 This version includes the addition of [PQTRACK](./Tools/PQTRACK), which is a PQC-aware extension to the third-party risk assessment capabilities of the CARAF framework.
+
+## CARAF 6.0
+This version includes the addition of [PQCheck](./Tools/PQCheck), a post-quantum cryptography (PQC) readiness and dependency risk assessment tool for GitHub repositories. 
