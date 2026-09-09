@@ -1,0 +1,485 @@
+<!--
+              Copyright 2026 Comcast Cable Communications Management, LLC
+
+              Licensed under the Apache License, Version 2.0 (the "License");
+              you may not use this file except in compliance with the License.
+              You may obtain a copy of the License at
+
+              http://www.apache.org/licenses/LICENSE-2.0
+
+              Unless required by applicable law or agreed to in writing, software
+              distributed under the License is distributed on an "AS IS" BASIS,
+              WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+              See the License for the specific language governing permissions and
+              limitations under the License.
+
+              SPDX-License-Identifier: Apache-2.0
+
+              This product includes software developed at Comcast (https://www.comcast.com/).
+-->
+<!DOCTYPE html>
+<html>
+<head>
+  <title>SBOM Dependency Analyzer</title>
+
+  <style>
+    body{
+      font-family:"Segoe UI", Arial;
+      background:#f4f6f8;
+      padding:40px;
+      text-align:center;
+    }
+
+    input{
+      padding:14px;
+      width:60%;
+      border-radius:8px;
+      border:1px solid #ccc;
+    }
+
+    button{
+      padding:12px 20px;
+      background:#2563eb;
+      color:white;
+      border:none;
+      border-radius:6px;
+      cursor:pointer;
+    }
+
+    button:hover{ background:#1d4ed8; }
+
+    .section{
+      margin-top:30px;
+      background:white;
+      padding:30px;
+      border-radius:12px;
+      box-shadow:0 8px 25px rgba(0,0,0,0.08);
+      text-align:left;
+    }
+
+    table{
+      width:95%;
+      border-collapse:collapse;
+      margin-top:15px;
+    }
+
+    th{
+      background:#2563eb;
+      color:white;
+    }
+
+    th,td{
+      padding:10px;
+      border:1px solid #ddd;
+    }
+
+    .badge{
+      display:inline-block;
+      padding:4px 10px;
+      border-radius:999px;
+      font-size:12px;
+      font-weight:600;
+      margin-left:8px;
+    }
+
+    .green{background:#dcfce7;color:#166534;}
+    .red{background:#fee2e2;color:#991b1b;}
+    .orange{background:#fff7ed;color:#9a3412;}
+    .blue{background:#eff6ff;color:#1e40af;}
+    .gray{background:#f3f4f6;color:#374151;}
+
+    .bot-response{
+      background:#ffffff;
+      padding:20px;
+      border-radius:12px;
+      border-left:6px solid #2563eb;
+      line-height:1.6;
+    }
+
+    .ai-box{
+      background:#ffffff;
+      border-left:6px solid #2563eb;
+      padding:22px;
+      border-radius:12px;
+      line-height:1.7;
+      margin-top:10px;
+    }
+
+    .ai-box h3{
+      margin-top:18px;
+      color:#1e40af;
+    }
+
+    .ai-box ul{
+      margin-left:22px;
+    }
+
+    .ai-box li{
+      margin-bottom:6px;
+    }
+
+    .ai-box pre{
+      background:#111827;
+      color:#f9fafb;
+      padding:12px;
+      border-radius:8px;
+      overflow-x:auto;
+    }
+
+    .analysis-card{
+      margin-top:14px;
+      border:1px solid #dbeafe;
+      border-radius:12px;
+      background:#f8fbff;
+      overflow:hidden;
+    }
+
+    .analysis-head{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      padding:12px 16px;
+      background:#eff6ff;
+      border-bottom:1px solid #dbeafe;
+      font-weight:600;
+    }
+
+    .analysis-meta{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+      gap:10px;
+      padding:14px 16px;
+      background:#ffffff;
+    }
+
+    .meta-item{
+      border:1px solid #e5e7eb;
+      border-radius:10px;
+      padding:10px 12px;
+      background:#f9fafb;
+      font-size:13px;
+      line-height:1.45;
+    }
+
+    .meta-label{
+      font-weight:700;
+      color:#1f2937;
+      display:block;
+      margin-bottom:2px;
+    }
+
+    .muted{
+      color:#6b7280;
+      font-size:13px;
+      margin:8px 0;
+    }
+
+    summary{
+      cursor:pointer;
+      font-weight:600;
+      font-size:16px;
+    }
+
+    .download-actions{
+      margin-top:16px;
+      display:flex;
+      gap:10px;
+      justify-content:center;
+      flex-wrap:wrap;
+    }
+
+    .download-btn{
+      padding:10px 14px;
+      border:none;
+      border-radius:8px;
+      color:#fff;
+      font-weight:600;
+      cursor:pointer;
+    }
+
+    .download-btn.csv{ background:#0f766e; }
+    .download-btn.html{ background:#1d4ed8; }
+  </style>
+</head>
+
+<body>
+
+<h2>🔗 SBOM Dependency Analyzer</h2>
+
+<input id="repo" placeholder="owner/repo (example: openssl/openssl)">
+<button onclick="analyze()">Analyze</button>
+
+<div class="download-actions" id="download-actions" style="display:none;">
+  <button class="download-btn csv" onclick="downloadDependency('csv')">⬇ Download CSV</button>
+  <button class="download-btn html" onclick="downloadDependency('html')">⬇ Download HTML</button>
+</div>
+
+<div id="graph"></div>
+
+<script>
+let exportPayload = {
+  dependencies: [],
+  crypto_dependencies: [],
+  maintenance: [],
+  dependency_migration_advice: ""
+};
+
+function detectStatusBadge(text){
+  if(/well[-\s]?maintained/i.test(text))
+    return "<span class='badge green'>WELL‑MAINTAINED</span>";
+  if(/at[-\s]?risk/i.test(text))
+    return "<span class='badge red'>AT‑RISK</span>";
+  if(/maintained/i.test(text))
+    return "<span class='badge orange'>MAINTAINED</span>";
+  return "<span class='badge gray'>UNKNOWN</span>";
+}
+
+function renderAI(text){
+  const formatted = formatAiMarkdown(text || "No AI analysis available");
+
+  return `
+    <div class="bot-response">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;">
+        <span style="font-weight:700;color:#1e3a8a;">🤖 AI Executive Assessment</span>
+        ${detectStatusBadge(text || "")}
+      </div>
+      <details open>
+        <summary>View detailed AI analysis</summary>
+        <div class="ai-box">${formatted}</div>
+      </details>
+    </div>
+  `;
+}
+
+function formatAiMarkdown(rawText){
+  let t = String(rawText || "");
+  t = escapeHtml(t);
+
+  t = t
+    .replace(/^#### (.*$)/gim,"<h3>$1</h3>")
+    .replace(/^### (.*$)/gim,"<h3>$1</h3>")
+    .replace(/\*\*(.*?)\*\*/g,"<strong>$1</strong>")
+    .replace(/^- (.*)/gim,"<li>$1</li>")
+    .replace(/(<li>.*<\/li>)/gis,"<ul>$1</ul>")
+    .replace(/```([\s\S]*?)```/g,"<pre>$1</pre>")
+    .replace(/\n{2,}/g,"<br><br>")
+    .replace(/\n/g,"<br>");
+
+  return t;
+}
+
+function yesNoBadge(value){
+  return value
+    ? "<span class='badge green'>YES</span>"
+    : "<span class='badge red'>NO</span>";
+}
+
+function safe(v){
+  if(v === null || v === undefined || v === "") return "N/A";
+  return escapeHtml(v);
+}
+
+function escapeHtml(text){
+  const map = {
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#039;"
+  };
+  return String(text).replace(/[&<>"']/g, m => map[m]);
+}
+
+function renderMeta(meta){
+  return `
+    <div class="analysis-meta">
+      <div class="meta-item">
+        <span class="meta-label">📅 Last Push</span>
+        ${safe(meta.last_push)}
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">🏷️ Latest Release</span>
+        ${safe(meta.latest_release)}
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">👥 Contributors</span>
+        ${safe(meta.contributors)}
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">🔁 CI</span>
+        ${yesNoBadge(!!meta.ci)}
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">🛡️ Security Policy</span>
+        ${yesNoBadge(!!meta.security)}
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">⚛️ PQC Category</span>
+        <span class="badge blue">${safe(meta.category)}</span>
+      </div>
+    </div>
+  `;
+}
+
+async function analyze(){
+  let repo=document.getElementById("repo").value.trim();
+  if(!repo){ alert("Enter repository"); return; }
+
+  exportPayload = {
+    dependencies: [],
+    crypto_dependencies: [],
+    maintenance: [],
+    dependency_migration_advice: ""
+  };
+
+  document.getElementById("download-actions").style.display = "none";
+
+  document.getElementById("graph").innerHTML =
+    "<div class='section'><h3>Analyzing SBOM…</h3></div>";
+
+  let res = await fetch("/dependency",{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({repo})
+  });
+
+  let data = await res.json();
+  exportPayload.dependencies = data.dependencies || [];
+
+  /* ------------------------------
+     STEP 1 — Full SBOM Dependencies
+     ------------------------------ */
+  let html =
+    "<div class='section'><h3>📦 Step 1: Extracted Dependencies (SBOM)</h3>";
+
+  html += "<table><tr><th>Dependency</th><th>Source</th></tr>";
+
+  data.dependencies.forEach(d=>{
+    html += `<tr><td>${escapeHtml(d.name)}</td><td>${escapeHtml(d.version||"unknown")}</td></tr>`;
+  });
+
+  html += "</table></div>";
+
+  /* ------------------------------
+     STEP 2 — Crypto Dependencies from Backend
+     ------------------------------ */
+  let crypto = data.crypto_dependencies || [];
+  exportPayload.crypto_dependencies = crypto;
+  exportPayload.dependency_migration_advice = data.dependency_migration_advice || "";
+
+  html += "<div class='section'><h3>🔐 Step 2: Cryptography Dependencies</h3>";
+
+  if(crypto.length === 0){
+    html += "<span class='badge gray'>No cryptographic dependencies detected</span></div>";
+  } else {
+    html += "<table><tr><th>Name</th><th>Normalized</th><th>Type</th><th>GitHub Repo</th></tr>";
+
+    crypto.forEach(c=>{
+      html += `<tr>
+        <td>${escapeHtml(c.name)}</td>
+        <td>${escapeHtml(c.normalized)}</td>
+        <td>${escapeHtml(c.type)}</td>
+        <td>${c.github_repo ? escapeHtml(c.github_repo) : "<i>No mapping</i>"}</td>
+      </tr>`;
+    });
+
+    html += "</table></div>";
+  }
+
+  /* ------------------------------
+     STEP 3 — Maintenance Check for Crypto Repos
+     ------------------------------ */
+  let aiSection =
+    "<div class='section'><h3>🏗️ Step 3: Crypto Dependency Maintenance Analysis</h3>";
+
+  if(crypto.length === 0){
+    aiSection += "<p class='muted'>ℹ️ No mapped crypto repositories available for maintenance analysis.</p>";
+  }
+
+  for(let c of crypto){
+    if(!c.github_repo){ 
+      aiSection += `<p class='muted'>⚪ ${escapeHtml(c.name)} → no mapped GitHub repo</p>`;
+      continue;
+    }
+
+    try{
+      let r = await fetch("/repo_crypto",{
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({repo: c.github_repo})
+      });
+
+      let meta = await r.json();
+      exportPayload.maintenance.push(meta);
+
+      aiSection += `
+        <div class="analysis-card">
+          <div class="analysis-head">
+            <span>🔍 ${escapeHtml(c.github_repo)}</span>
+            <span class="badge orange">${safe(meta.rating).toUpperCase()}</span>
+          </div>
+          ${renderMeta(meta)}
+          <div style="padding:0 16px 16px 16px;">
+            ${renderAI(meta.ai_assessment || "No AI analysis available")}
+          </div>
+        </div>
+      `;
+    }catch(err){
+      aiSection += `<p class='muted'>❌ Error analyzing ${escapeHtml(c.github_repo)}</p>`;
+    }
+  }
+
+  aiSection += "</div>";
+
+  let migrationSection =
+    "<div class='section'><h3>🚀 Step 4: Dependency PQC Migration Guidance</h3>";
+
+  migrationSection += renderAI(data.dependency_migration_advice || "No migration advice available.");
+  migrationSection += "</div>";
+
+  const graphElement = document.getElementById("graph");
+  graphElement.textContent = "";
+  const tempDiv = document.createElement("div");
+  tempDiv.innerHTML = html + aiSection + migrationSection;
+  graphElement.appendChild(tempDiv);
+  document.getElementById("download-actions").style.display = "flex";
+}
+
+async function downloadDependency(format){
+  if(!exportPayload.dependencies.length && !exportPayload.crypto_dependencies.length && !exportPayload.maintenance.length && !exportPayload.dependency_migration_advice){
+    alert("Run an analysis first.");
+    return;
+  }
+
+  const res = await fetch(`/dependency/export/${format}`, {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify(exportPayload)
+  });
+
+  if(!res.ok){
+    alert("Download failed.");
+    return;
+  }
+
+  const blob = await res.blob();
+  if(!blob || !blob.type) {
+    alert("Invalid response received.");
+    return;
+  }
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  const sanitizedFormat = String(format).replace(/[^a-z0-9]/gi, '');
+  a.download = `dependency_analysis.${sanitizedFormat}`;
+  a.style.display = "none";
+  const container = document.createElement("div");
+  container.appendChild(a);
+  a.click();
+  URL.revokeObjectURL(url);
+}
+</script>
+
+</body>
+</html>

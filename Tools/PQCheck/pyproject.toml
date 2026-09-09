@@ -1,0 +1,14 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pqcheck"
+version = "0.1.0"
+description = "Flask web app for PQC and dependency analysis"
+readme = "README.md"
+requires-python = ">=3.10"
+license = "Apache-2.0"
+authors = [
+  { name = "Comcast Cable Communications Management, LLC" }
+]
