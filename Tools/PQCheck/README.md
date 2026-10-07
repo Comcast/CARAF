@@ -110,6 +110,9 @@ curl -X POST http://127.0.0.1:5000/chat \
   -H "Content-Type: application/json" \
   -d '{"repo":"open-quantum-safe/liboqs","message":"Is this production ready for PQC?"}'
 ```
+## Demo
+
+To get the best out of PQCheck - Watch the PQCheck Demo - [Link](https://github.com/user-attachments/assets/16f4c262-d9ae-416f-b990-c17ea117deef)
 
 ## Notes
 
