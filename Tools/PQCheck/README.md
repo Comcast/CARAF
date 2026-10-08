@@ -112,7 +112,9 @@ curl -X POST http://127.0.0.1:5000/chat \
 ```
 ## Demo
 
-To get the best out of PQCheck - Watch the PQCheck Demo - [Link](https://github.com/user-attachments/assets/16f4c262-d9ae-416f-b990-c17ea117deef)
+To get the best out of PQCheck, watch the PQCheck demo video below.
+
+https://github.com/user-attachments/assets/16f4c262-d9ae-416f-b990-c17ea117deef
 
 ## Notes
 
