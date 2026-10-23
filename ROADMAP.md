@@ -16,7 +16,8 @@ While a feature may not be listed here, it doesn't imply automatic refusal of a 
 | Phase simplification & CARAF calculator | Simplification of CARAF phases from 5 to 3 phases along with CARAF calculator      | ✅Done   | [![Rahmadi Trimananda](https://img.shields.io/badge/GitHub-rtrimana-blue?logo=github)](https://github.com/rtrimana) |
 | PQBench benchmark release | Release of PQBench as PQC benchmarking framework      | ✅Done   | [![Golam Kayas](https://img.shields.io/badge/GitHub-golamkayas-blue?logo=github)](https://github.com/gkayas) |
 | xIPHER tool release | Release of xIPHER as PQC asset inventory tool      | ✅Done   | [![Jayati Dev](https://img.shields.io/badge/GitHub-devjayati-blue?logo=github)](https://github.com/devjayati) |
-| PQC-Aware Third Party Risk Assessment | Release of PQC-aware third party risk assessment framework for PQC      | 🚧ToDo   | [![Rahmadi Trimananda](https://img.shields.io/badge/GitHub-rtrimana-blue?logo=github)](https://github.com/rtrimana) |
+| PQC-Aware Third Party Risk Assessment | Release of PQC-aware third party risk assessment framework for PQC      | ✅Done   | [![Rahmadi Trimananda](https://img.shields.io/badge/GitHub-rtrimana-blue?logo=github)](https://github.com/rtrimana) |
+| PQCheck tool release | Release of PQCheck as PQC-readiness checker for repos      | ✅Done   | [![Supriya Anand](https://img.shields.io/badge/GitHub-Supriya-blue?logo=github)](https://github.com/Su-p-riya) |
 
 ---
 

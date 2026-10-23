@@ -16,6 +16,9 @@ We have created a [CARAF calculator](Resources/CARAF%20Calculator%20v3.3.xlsm) (
 
 https://github.com/user-attachments/assets/770f8f46-21d6-4c78-bff7-a2244a3b34a1
 
+# Crypto Asset Inventory with xIPHER
+CARAF has a crypto asset inventory tool called xIPHER. Please click [here](Tools/xIPHER) or check out the directory [Tools/xiPHER](Tools/xIPHER) to learn more.
+
 # Performance Evaluation with PQBench
 CARAF has a performance evaluation tool called PQBench. Please click [here](Tools/PQBench) or check out the directory [Tools/PQBench](Tools/PQBench) to learn more.
 

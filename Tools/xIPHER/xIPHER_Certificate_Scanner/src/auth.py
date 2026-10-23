@@ -41,10 +41,9 @@ from getpass import getpass
 from datetime import datetime, timedelta, timezone
 from typing import Tuple, Optional
 
-import requests
 import jwt
 
-from src.tls_utils import secure_request
+from src.tls_utils import ConnectionError, HTTPStatusError, RequestError, SSLError, Timeout, secure_request
 
 
 def _request_with_retries(
@@ -53,7 +52,7 @@ def _request_with_retries(
     retries: int = 3,
     backoff_seconds: float = 1.0,
     **kwargs,
-) -> requests.Response:
+) -> object:
     """Perform a secure HTTP request with retries for transient network/server errors."""
     last_exc: Optional[Exception] = None
 
@@ -67,11 +66,7 @@ def _request_with_retries(
                 continue
 
             return response
-        except (
-            requests.exceptions.Timeout,
-            requests.exceptions.ConnectionError,
-            requests.exceptions.SSLError,
-        ) as exc:
+        except (Timeout, ConnectionError, SSLError) as exc:
             last_exc = exc
             if attempt >= retries:
                 raise
@@ -151,7 +146,7 @@ def list_installations(jwt_token: str, org: str) -> int:
             page += 1
 
         raise ValueError(f"Organization '{org}' not found in GitHub App installations")
-    except requests.exceptions.RequestException as e:
+    except RequestError as e:
         raise RuntimeError(f"Failed to list GitHub App installations (auth may be invalid): {e}") from e
     except Exception as e:
         raise RuntimeError(f"Unexpected error listing installations: {e}") from e
@@ -242,6 +237,7 @@ class GitHubTokenManager:
         self._private_key_bytes = bytearray(private_key.encode("utf-8"))
         self.tokens = {}
         self.token_expiries = {}
+        self._lock = threading.Lock()
 
     def _get_private_key(self) -> str:
         """Build private key string from in-memory bytes."""
@@ -255,8 +251,9 @@ class GitHubTokenManager:
     def close(self):
         """Release sensitive memory and token caches."""
         self._wipe_private_key()
-        self.tokens.clear()
-        self.token_expiries.clear()
+        with self._lock:
+            self.tokens.clear()
+            self.token_expiries.clear()
 
     def __del__(self):
         self._wipe_private_key()
@@ -308,8 +305,9 @@ class GitHubTokenManager:
         min_utc = datetime.min.replace(tzinfo=timezone.utc)
         
         # Return cached token if still valid
-        if key in self.tokens and self.token_expiries.get(key, min_utc) > now_utc + timedelta(minutes=5):
-            return self.tokens[key]
+        with self._lock:
+            if key in self.tokens and self.token_expiries.get(key, min_utc) > now_utc + timedelta(minutes=5):
+                return self.tokens[key]
         
         try:
             jwt_token = self._generate_jwt()
@@ -330,10 +328,11 @@ class GitHubTokenManager:
             response.raise_for_status()
             
             token_data = response.json()
-            self.tokens[key] = token_data['token']
-            self.token_expiries[key] = datetime.now(timezone.utc) + timedelta(hours=1)
-            return self.tokens[key]
-        except requests.exceptions.RequestException as e:
+            with self._lock:
+                self.tokens[key] = token_data['token']
+                self.token_expiries[key] = datetime.now(timezone.utc) + timedelta(hours=1)
+                return self.tokens[key]
+        except RequestError as e:
             raise RuntimeError(f"Failed to get access token for installation {installation_id} (credentials may be invalid or revoked): {e}") from e
         except Exception as e:
             raise RuntimeError(f"Unexpected error retrieving access token: {e}") from e
@@ -422,10 +421,10 @@ def get_auth_from_user() -> Tuple[Optional[str], Optional[str], Optional[str]]:
             with open(resolved_key, 'r', encoding='utf-8') as f:
                 private_key = f.read()
         else:
-            print("Paste your private key (end with a blank line):")
+            print("Paste your private key line by line (input hidden). End with a blank line:")
             lines = []
             while True:
-                line = input()
+                line = getpass(prompt='')
                 if line == "":
                     break
                 lines.append(line)

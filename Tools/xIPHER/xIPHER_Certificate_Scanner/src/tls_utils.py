@@ -26,16 +26,83 @@ Features:
 - Environment variable pinning support (XIPHER_GITHUB_CERT_SHA256_PINS)
 """
 
+import json
 import os
 import ssl
 import socket
 import hashlib
 import threading
 import time
-from urllib.parse import urlparse
+from urllib.parse import urlencode, urlparse
 from typing import Optional, Dict, Any
 
-import requests
+import urllib3
+from urllib3.exceptions import ConnectTimeoutError, MaxRetryError, NewConnectionError, ReadTimeoutError, SSLError as Urllib3SSLError, HTTPError as Urllib3HTTPError
+from urllib3.util.timeout import Timeout as Urllib3Timeout
+
+
+class RequestError(Exception):
+    """Base exception for HTTP request failures."""
+
+
+class Timeout(RequestError):
+    """Raised when a request times out."""
+
+
+class ConnectionError(RequestError):
+    """Raised when a request cannot connect."""
+
+
+class SSLError(RequestError):
+    """Raised when TLS validation fails."""
+
+
+class HTTPStatusError(RequestError):
+    """Raised when a response contains an error HTTP status."""
+
+    def __init__(self, status_code: int, url: str, body: str = ""):
+        super().__init__(f"HTTP {status_code} error for {url}")
+        self.status_code = status_code
+        self.url = url
+        self.body = body
+
+
+class Response:
+    """Small response wrapper with the subset of requests.Response we use."""
+
+    def __init__(self, response: urllib3.response.HTTPResponse, url: str, stream: bool = False):
+        self._response = response
+        self.url = url
+        self._stream = stream
+        self.status_code = response.status
+        self.headers = dict(response.headers.items())
+
+    @property
+    def text(self) -> str:
+        body = self._response.data or b""
+        return body.decode("utf-8", errors="replace")
+
+    def json(self):
+        return json.loads(self.text)
+
+    def raise_for_status(self):
+        if 400 <= self.status_code:
+            raise HTTPStatusError(self.status_code, self.url, self.text)
+
+    def iter_content(self, chunk_size: int = 1024 * 1024):
+        if self._stream and self._response._fp is not None:
+            yield from self._response.stream(chunk_size)
+            return
+
+        data = self._response.data or b""
+        for index in range(0, len(data), chunk_size):
+            yield data[index:index + chunk_size]
+
+    def close(self):
+        self._response.close()
+
+
+_HTTP = urllib3.PoolManager()
 
 
 class GitHubTLSVerifier:
@@ -111,7 +178,7 @@ class GitHubTLSVerifier:
         Validate TLS identity for target GitHub hosts.
         
         Raises:
-            requests.exceptions.SSLError: If pinning or TOFU check fails
+            SSLError: If pinning or TOFU check fails
         """
         host = (urlparse(url).hostname or "").lower()
         if host not in self.TARGET_HOSTS:
@@ -121,7 +188,7 @@ class GitHubTLSVerifier:
         with self._lock:
             if self.pinned_fingerprints:
                 if current_fp not in self.pinned_fingerprints:
-                    raise requests.exceptions.SSLError(
+                    raise SSLError(
                         f"TLS pinning failed for {host}: fingerprint mismatch"
                     )
                 return
@@ -131,7 +198,7 @@ class GitHubTLSVerifier:
                 if known is None:
                     self._tofu_pins[host] = current_fp
                 elif known != current_fp:
-                    raise requests.exceptions.SSLError(
+                    raise SSLError(
                         f"TLS TOFU pin changed for {host}: refusing connection"
                     )
 
@@ -145,7 +212,7 @@ def secure_request(
     url: str, 
     tls_verifier: Optional[GitHubTLSVerifier] = None, 
     **kwargs
-) -> requests.Response:
+) -> Response:
     """
     Send HTTPS requests with explicit TLS verification and GitHub pinning checks.
     
@@ -153,14 +220,14 @@ def secure_request(
         method: HTTP method (GET, POST, etc.)
         url: Request URL (must use https://)
         tls_verifier: Custom TLS verifier (uses default if None)
-        **kwargs: Additional requests.request() arguments
+        **kwargs: Additional request arguments such as headers, params, timeout, data, json, stream
     
     Returns:
-        requests.Response object
+        Response object
     
     Raises:
         ValueError: If verify parameter is not True
-        requests.exceptions.SSLError: If TLS pinning/TOFU check fails
+        SSLError: If TLS pinning/TOFU check fails
     """
     verify = kwargs.pop("verify", True)
     if verify is not True:
@@ -168,10 +235,68 @@ def secure_request(
 
     verifier = tls_verifier or _DEFAULT_TLS_VERIFIER
     verifier.validate_url(url)
-    return requests.request(method=method, url=url, verify=True, **kwargs)
+
+    params = kwargs.pop("params", None)
+    headers = dict(kwargs.pop("headers", {}) or {})
+    timeout = kwargs.pop("timeout", None)
+    stream = kwargs.pop("stream", False)
+    allow_redirects = kwargs.pop("allow_redirects", True)
+    data = kwargs.pop("data", None)
+    json_body = kwargs.pop("json", None)
+
+    if kwargs:
+        unsupported = ", ".join(sorted(kwargs.keys()))
+        raise TypeError(f"Unsupported request arguments: {unsupported}")
+
+    if params:
+        parsed = urlparse(url)
+        query = parsed.query
+        if query:
+            query += "&"
+        query += urlencode(params, doseq=True)
+        url = parsed._replace(query=query).geturl()
+
+    body = data
+    if json_body is not None:
+        body = json.dumps(json_body).encode("utf-8")
+        headers.setdefault("Content-Type", "application/json")
+
+    urllib3_timeout = None
+    if timeout is not None:
+        if isinstance(timeout, tuple):
+            connect_timeout, read_timeout = timeout
+            urllib3_timeout = Urllib3Timeout(connect=connect_timeout, read=read_timeout)
+        else:
+            urllib3_timeout = Urllib3Timeout(total=timeout)
+
+    try:
+        response = _HTTP.request(
+            method=method,
+            url=url,
+            headers=headers or None,
+            body=body,
+            timeout=urllib3_timeout,
+            preload_content=not stream,
+            redirect=allow_redirects,
+        )
+        return Response(response, url, stream=stream)
+    except (ConnectTimeoutError, ReadTimeoutError):
+        raise Timeout(f"Request timed out for {url}")
+    except (NewConnectionError, MaxRetryError):
+        raise ConnectionError(f"Connection failed for {url}")
+    except Urllib3SSLError as exc:
+        raise SSLError(f"TLS error for {url}: {exc}") from exc
+    except Urllib3HTTPError as exc:
+        raise RequestError(f"Request failed for {url}: {exc}") from exc
 
 
 __all__ = [
     'GitHubTLSVerifier',
     'secure_request',
+    'Response',
+    'RequestError',
+    'Timeout',
+    'ConnectionError',
+    'SSLError',
+    'HTTPStatusError',
 ]
