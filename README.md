@@ -19,8 +19,14 @@ https://github.com/user-attachments/assets/770f8f46-21d6-4c78-bff7-a2244a3b34a1
 # Crypto Asset Inventory with xIPHER
 CARAF has a crypto asset inventory tool called xIPHER. Please click [here](Tools/xIPHER) or check out the directory [Tools/xiPHER](Tools/xIPHER) to learn more.
 
+# PQC-Readiness Check with PQCheck
+CARAF has a PQC-readiness check tool called PQCheck. Please click [here](Tools/PQCheck) or check out the directory [Tools/PQCheck](Tools/PQCheck) to learn more.
+
 # Performance Evaluation with PQBench
 CARAF has a performance evaluation tool called PQBench. Please click [here](Tools/PQBench) or check out the directory [Tools/PQBench](Tools/PQBench) to learn more.
+
+# PQC-Aware Third-Party Risk Assessment with PQTRACK
+CARAF has a PQC-aware third-party risk assessment framework with PQTRACK. Please click [here](Tools/PQTRACK) or check out the directory [Tools/PQTRACK](Tools/PQTRACK) to learn more.
 
 # CARAF is Referenced by Government and Industry
 
